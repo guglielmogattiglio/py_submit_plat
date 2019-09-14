@@ -1,4 +1,4 @@
-1. website infrastrucute: basic settings, create needed view functions, create basic templates.
+1. website infrastrucute: basic settings, create needed view functions, create basic templates. (show diff between with and without extending block for templates)
 2. Forms: signup, login, challenge (static, forms)
 3. Db: create models 
 4. Login: create login, replace forced user, connect to db for retreival
