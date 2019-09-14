@@ -1,0 +1,9 @@
+1. website infrastrucute: basic settings, create needed view functions, create basic templates.
+2. Forms: signup, login, challenge (static, forms)
+3. Db: create models 
+4. Login: create login, replace forced user, connect to db for retreival
+5. Socketio: add websockets, get content back, update leaterboard
+6. Challenges: make sample challenge text, make webpage dynamic
+7. Student evaluation: handle updated code (compare with provided solutions), update Db, update client based on output, update leaterboard
+8. Wrap up: make everything look nice (CSS)
+9. Deployment
