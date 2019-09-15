@@ -1,5 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<div> Insert challenge form </div>
+	<div> 
+		<span> Room: {{ room }} </span>
+		<span> User: {{ user }} </span>
+		<a href="{{ url_for('change_room') }}"> Change room </a>
+	</div>
+	
+	<br>
+	
+	<div>
+		<p> 
+			<span> {{ text }} </span>
+			<span> Score: 0 out of 7 </span>
+		</p>  
+		
+		<br>
+		
+		<div> Load tips dynamically (TODO)</div>
+		
+		<textarea id="myTextArea"> </textarea>
+		
+		<br>
+		
+		<button onclick="sendSolution1()"> execute </button>
+		
+		<br>
+		
+		<span id="results"> </span> 
+	</div>
+	
+<script type="text/javascript" charset="utf-8">
+		function sendSolution1(){
+			var myText = document.getElementById("myTextArea").value;
+			myText += "<br> It works";
+			document.getElementById("results").innerHTML = myText;
+		}
+</script>
 {% endblock %}
+

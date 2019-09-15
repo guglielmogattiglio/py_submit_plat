@@ -1,5 +1,34 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<div> Insert login form </div>
+	<div> Fill in the following to join the group.</div>
+	
+	<form action="" method="POST" novalidate>
+		{{ form.hidden_tag() }}
+		<p>
+		{{ form.group_name.label }} <br> {{ form.group_name() }}
+		
+		{% for error in form.group_name.errors %} <br>
+			<span style="color: red;"> [{{ error }}] </span>
+		{% endfor %}
+		</p>
+		
+		<p>
+		{{ form.group_psw.label }} <br> {{ form.group_psw() }}
+		
+		{% for error in form.group_psw.errors %} <br>
+			<span style="color: red;"> [{{ error }}] </span>
+		{% endfor %}
+		</p>
+		
+		<p>
+		{{ form.username.label }} <br> {{ form.username() }}
+		
+		{% for error in form.username.errors %} <br>
+			<span style="color: red;"> [{{ error }}] </span>
+		{% endfor %}
+		</p>
+		
+		<p> {{ form.join() }} </p>
+	</form>
 {% endblock %}
