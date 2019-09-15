@@ -12,7 +12,11 @@ def signup():
 @flask_app.route('/challenge')
 def challenge():
 	return render_template('challenge.html')
-	
+
+@flask_app.route('welcome')
+def welcome():
+	return render_template('welcome.html')
+
 @flask_app.route('/')
 def index():
 	return redirect(url_for('challenge'))
