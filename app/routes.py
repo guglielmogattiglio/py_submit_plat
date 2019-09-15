@@ -13,7 +13,7 @@ def signup():
 def challenge():
 	return render_template('challenge.html')
 
-@flask_app.route('welcome')
+@flask_app.route('/welcome')
 def welcome():
 	return render_template('welcome.html')
 
