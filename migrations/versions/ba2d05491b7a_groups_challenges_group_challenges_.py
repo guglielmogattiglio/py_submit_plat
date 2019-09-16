@@ -27,7 +27,6 @@ def upgrade():
     sa.Column('group_id', sa.Integer(), nullable=False),
     sa.Column('group_name', sa.String(length=64), nullable=False),
     sa.Column('group_psw', sa.String(length=64), nullable=False),
-    sa.Column('connected_users', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('group_id')
     )
     op.create_index(op.f('ix_groups_group_name'), 'groups', ['group_name'], unique=True)

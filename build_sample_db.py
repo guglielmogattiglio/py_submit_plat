@@ -1,5 +1,5 @@
 from app import db
-from app.models import Groups, Challenges, ChallengeGroup
+from app.models import Groups, Challenges, ChallengeGroup, Users
 
 #empty db
 Groups.query.delete()
@@ -31,6 +31,14 @@ c_g4 = ChallengeGroup(group_id=2, challenge_id=1, n_attempts=11, best_score=4)
 db.session.add_all([c_g1, c_g2, c_g3, c_g4])
 db.session.commit()
 
+u1 = Users(group_id=1)
+u2 = Users(group_id=1)
+u3 = Users(group_id=1)
+u4 = Users(group_id=2)
+u5 = Users(group_id=2)
+
+db.session.add_all([u1, u2, u3, u4, u5])
+db.session.commit()
 
 #print(Groups.query.all())
 #print(Challenges.query.all())

@@ -4,7 +4,6 @@ class Groups(db.Model):
     group_id = db.Column(db.Integer, primary_key=True)
     group_name = db.Column(db.String(64), index=True, unique=True, nullable=False)
     group_psw = db.Column(db.String(64), nullable=False)
-    connected_users = db.Column(db.Integer)
     group_challenges = db.relationship("ChallengeGroup", cascade="all, delete-orphan", backref="group")
     
     def __repr__(self):
@@ -25,6 +24,12 @@ class ChallengeGroup(db.Model):
     best_score = db.Column(db.Integer)
     last_score = db.Column(db.Integer)
           
+    
+class Users(db.Model):
+    user_id = db.Column(db.Integer, primary_key=True)
+    group_id = db.Column(db.Integer, db.ForeignKey('groups.group_id'))
+    group = db.relationship("Groups", backref="users")
+    
     
 
     

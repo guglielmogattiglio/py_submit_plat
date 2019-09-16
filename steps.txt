@@ -1,6 +1,6 @@
 1. website infrastrucute: basic settings, create needed view functions, create basic templates. (show diff between with and without extending block for templates)
 2. Forms: signup, login, challenge (static, forms)
-3. Db: create models, add custom vlidators in forms, check correct user/psw
+3. Db: create models, add custom vlidators in forms, check correct name/psw
 4. Login: create login, replace forced user, connect to db for retreival, track connected users
 5. Socketio: add websockets, get content back, update leaterboard
 6. Challenges: make sample challenge text, make webpage dynamic
