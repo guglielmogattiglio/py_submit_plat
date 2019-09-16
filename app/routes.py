@@ -21,7 +21,7 @@ def signup():
 	
 @flask_app.route('/challenge')
 def challenge():
-	return render_template('challenge.html', room='test-room', user='test-user', text=sample_challenge['text'])
+	return render_template('challenge.html', room='test-room', n_users='1', text=sample_challenge['text'])
 
 @flask_app.route('/welcome', methods=['GET', 'POST'])
 def welcome():

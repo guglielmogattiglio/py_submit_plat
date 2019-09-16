@@ -29,14 +29,6 @@
 		{% endfor %}
 		</p>
 		
-		<p>
-		{{ form.username.label }} <br> {{ form.username() }}
-		
-		{% for error in form.username.errors %} <br>
-			<span style="color: red;"> [{{ error }}] </span>
-		{% endfor %}
-		</p>
-		
 		<p> {{ form.create() }} </p>
 	</form>
 {% endblock %}
