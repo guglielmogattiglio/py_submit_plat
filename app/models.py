@@ -1,4 +1,6 @@
 from app import db
+from flask_login import UserMixin
+from app import login
 
 class Groups(db.Model):
     group_id = db.Column(db.Integer, primary_key=True)
@@ -25,11 +27,18 @@ class ChallengeGroup(db.Model):
     last_score = db.Column(db.Integer)
           
     
-class Users(db.Model):
+class Users(db.Model, UserMixin):
     user_id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column(db.Integer, db.ForeignKey('groups.group_id'))
     group = db.relationship("Groups", backref="users")
     
+    #works because class instance keeps initial assignments
+    #i.e. self.user_id = user_id
+    def get_id(self):
+        return str(self.user_id)
     
+@login.user_loader
+def load_user(id):
+    return Users.query.get(int(id))
 
     

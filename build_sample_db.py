@@ -8,7 +8,7 @@ ChallengeGroup.query.delete()
 db.session.commit()
 
 #populate db
-g1 = Groups(group_id=1, group_name='my_first', group_psw='psw_1', connected_users=0)
+g1 = Groups(group_id=1, group_name='my_first', group_psw='psw_1')
 g2 = Groups(group_id=2, group_name='my_second', group_psw='psw_2')
 g3 = Groups(group_id=3, group_name='my_third', group_psw='psw_3')
 g4 = Groups(group_name='my_forth', group_psw='psw_3')
