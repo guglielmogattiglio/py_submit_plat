@@ -2,7 +2,7 @@
 2. Forms: signup, login, challenge (static, forms)
 3. Db: create models, add custom vlidators in forms, check correct name/psw
 4. Login: create login, replace forced user, connect to db for retreival, track connected users
-5. Socketio: add websockets, get content back, update leaterboard
+5. Socketio: add websockets, get content back, update leaterboard (backend)
 6. Challenges: make sample challenge text, make webpage dynamic
 7. Student evaluation: handle updated code (compare with provided solutions), update Db, update client based on output, update leaterboard
 8. Wrap up: make everything look nice (CSS)

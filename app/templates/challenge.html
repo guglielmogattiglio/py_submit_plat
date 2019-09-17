@@ -1,10 +1,58 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+		function sendSolution1(challenge_id){
+			var myText = document.getElementById("myTextArea").value;
+			
+			socket.emit('process_script', {"script": myText, "group": group, "challenge_id": challenge_id});
+		}
+		
+		function change_group(){
+			socket.emit('change_group', {});
+		}
+		
+		function update_n_users(msg){
+			document.getElementById("n_users").innerHTML = msg['n_users'];
+		}
+		
+		function update_scoreboard(msg){
+			console.log(msg);
+		}
+		
+		function feedback(msg){
+			document.getElementById("results").innerHTML = msg['output'];
+			//update score TODO
+		}
+		
+		var group = '{{ group }}';
+		
+		var socket = io();
+		
+		socket.emit('join', {'group': group});
+		
+		// Event handler for incoming data - updates number conn users
+        socket.on('update_n_users', update_n_users);
+		
+		// Event handler for incoming data - updates scoreboard
+        socket.on('update_scoreboard', update_scoreboard);
+		
+		// Event handler for incoming data - updates score and displays output
+        socket.on('feedback', feedback);
+		
+		socket.on('redirect', my_redirect);
+		
+		function my_redirect(data){
+			window.location = '{{ redirect }}';
+		}
+</script>
+
 	<div> 
-		<span> Room: {{ room }} </span>
-		<span> Users connected: {{ n_users }} </span>
-		<a href="{{ url_for('change_room') }}"> Change room </a>
+		<span> Group: {{ group }} </span>
+		<span>Users connected: </span><span id="n_users"> {{ n_users }} </span>
+		<a href='#' onclick="change_group()"> Change group </a>
 	</div>
 	
 	<br>
@@ -12,7 +60,7 @@
 	<div>
 		<p> 
 			<span> {{ text }} </span>
-			<span> Score: 0 out of 7 </span>
+			<span> Score: <span id="lowscore1"></span> out of {{ high_score_1 }} </span>
 		</p>  
 		
 		<br>
@@ -23,19 +71,13 @@
 		
 		<br>
 		
-		<button onclick="sendSolution1()"> execute </button>
+		<button onclick="sendSolution1(1)"> execute </button>
 		
 		<br>
 		
 		<span id="results"> </span> 
 	</div>
 	
-<script type="text/javascript" charset="utf-8">
-		function sendSolution1(){
-			var myText = document.getElementById("myTextArea").value;
-			myText += "<br> It works";
-			document.getElementById("results").innerHTML = myText;
-		}
-</script>
+
 {% endblock %}
 

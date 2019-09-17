@@ -13,7 +13,7 @@ class Groups(db.Model):
     
 class Challenges(db.Model):
     challenge_id = db.Column(db.Integer, primary_key=True)
-    max_score = db.Column(db.Integer)
+    max_score = db.Column(db.Integer, nullable=False)
     challenge_scoreboard = db.relationship("ChallengeGroup", cascade="all, delete-orphan", backref="challenge")
     def __repr__(self):
         return f'<Challenge {self.challenge_id}>'
@@ -22,9 +22,9 @@ class Challenges(db.Model):
 class ChallengeGroup(db.Model):
     group_id = db.Column(db.Integer, db.ForeignKey('groups.group_id'), primary_key=True)
     challenge_id = db.Column(db.Integer, db.ForeignKey('challenges.challenge_id'), primary_key=True)
-    n_attempts = db.Column(db.Integer)
-    best_score = db.Column(db.Integer)
-    last_score = db.Column(db.Integer)
+    n_attempts = db.Column(db.Integer, nullable=False)
+    best_score = db.Column(db.Integer, nullable=False)
+    last_score = db.Column(db.Integer, nullable=False)
           
     
 class Users(db.Model, UserMixin):
