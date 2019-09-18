@@ -85,8 +85,8 @@ th {
 
 	<div class="container">
 		<div class="row">
-			<div class="col-xs-1"></div>
-			<div class="col-xs-10">
+			<!-- <div class="col-xs-1"></div> -->
+			<div class="col-xs-12">
 				<div class="row"> 
 					<div class="col-xs-2">
 						<span> Group: {{ group }} </span>
@@ -103,7 +103,7 @@ th {
 				<br>
 				
 				<div class="row">
-					<div id="challenges" class="col-xs-8">
+					<div id="challenges" class="col-xs-10">
 						
 					</div>
 					
@@ -112,7 +112,7 @@ th {
 					</div>
 				</div>
 			</div>
-			<div class="col-xs-1"></div>
+			<!-- <div class="col-xs-1"></div> -->
 		</div>
 	</div>
 
@@ -138,30 +138,32 @@ th {
 		var max_score = data['max_score'];
 		var tips = data['tips'];
 		
-		var div = $('<div id="c_' + c_id + '"></div>');
+		var div = $('<div id="c_title_' + c_id + '"></div>');
 		var row_1 = $('<div class="row"></div>');
 		var col_1 = $('<div class="col"></div>');
-		var title = $('<h2>' + title + '</h2>');
+		var title = $('<h3>' + title + '</h3>');
 		
 
 		col_1.append(title);
 		row_1.append(col_1);
 		div.append(row_1);
 		
+		var div_2 = $('<div id="c_' + c_id + '"></div>');
+		
 		var row_2 = $('<div class="row"></div>');
-		var col_2 = $('<div class="col-md-7"></div>');
-		var text = $('<p class="my_text">' + text + '</p>');
-		var col_3 = $('<div class="col-1"></div>');
+		var col_2 = $('<div class="col-md-9"></div>');
+		var text = $('<span class="my_text">' + text + '</span>');
+		var col_3 = $('<div class="col-md-3"></div>');
 		var score = $('<p> Score: <span id="lowscore_' + c_id + '">0</span> out of ' + max_score + '</p> ');
 		
 		col_3.append(score);
 		col_2.append(text);
 		row_2.append(col_2);
 		row_2.append(col_3);
-		div.append(row_2);
+		div_2.append(row_2);
 		
 		var row_3 = $('<div class="row"></div>');
-		var col_4 = $('<div class="col"></div>');
+		var col_4 = $('<div class="col-md-12"></div>');
 		
 		var tips_container = $('<div class="tips_container"></div>');
 		for (var i = 0; i < tips.length; i++){
@@ -180,7 +182,9 @@ th {
 		col_4.append(exec_button);
 		col_4.append(result);
 		row_3.append(col_4);
-		div.append(row_3);
+		div_2.append(row_3);
+		
+		div.append(div_2);
 		
 		return div;
 	}
