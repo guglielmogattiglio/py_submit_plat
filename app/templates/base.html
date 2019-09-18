@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title> Python Challenges Platform</title>
-		<h1> Python Challenges Platform</h1>
-	</head>
-	
-	<body> 
-		{% with messages = get_flashed_messages() %}
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Python Challenges Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+	{% with messages = get_flashed_messages() %}
 		  {% if messages %}
 			<script>
 			  var messages = {{ messages | safe }};
@@ -15,8 +13,10 @@
 			  }
 			</script>
 		  {% endif %}
-		{% endwith %}
-
-		{% block content %} {% endblock %}
-	</body>
-</html>
+	{% endwith %}
+	
+	<h1> Python Challenges Platform</h1>
+	
+	{% block my_content %}{% endblock %}
+</div>
+{% endblock %}

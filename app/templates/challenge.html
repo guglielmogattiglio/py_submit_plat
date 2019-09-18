@@ -1,83 +1,292 @@
 {% extends "base.html" %}
 
-{% block content %}
 
+{% block styles %}
+{{ super() }}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+<style>
+button{
+    -webkit-appearance: button;
+    cursor: pointer;
+
+
+    background-color: #fff;
+    border-color: #ccc;
+
+    display: inline-block;
+    padding: 2	px 12px;
+    margin: 4px 2px;
+    font-size: 12px;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+
+	-webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+}
+
+button:hover {
+	border-color: #adadad;
+	background-color:: #e6e6e6;
+	background-color:: black;
+}
+
+textarea {
+margin: 6px 2px;
+}
+
+.my_text {
+	font-size: 16px;
+}
+
+.tips_text {
+	margin-top: 4px;
+	margin-bottom: -4px;
+	margin-right: 2px;
+	margin-left: 8px;
+}
+
+.tips_container {
+	margin-left: 18px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px 40px 8px 10px;
+}
+
+th {
+	padding: 8px;
+	text-align: center;
+	font-size: 22px;
+}
+
+.cell_ch {
+  background-color: #dddddd;
+  padding-left: 6px;
+}
+
+.cell_group {
+	padding-left: 18px;
+}
+</style>
+{% endblock %}
+
+
+{% block my_content %}
+
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-1"></div>
+			<div class="col-xs-10">
+				<div class="row"> 
+					<div class="col-xs-2">
+						<span> Group: {{ group }} </span>
+					</div>
+					<div class="col-xs-2">
+						<span>Users connected: </span><span id="n_users"> {{ n_users }} </span>
+					
+					</div>
+					<div class="col-xs-2">
+						<a href='#' onclick="change_group()"> Change group </a>
+					</div>
+				</div>
+				
+				<br>
+				
+				<div class="row">
+					<div id="challenges" class="col-xs-8">
+						
+					</div>
+					
+					<div id="scoreboard" class="col-xs-2">
+						
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-1"></div>
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
 <script type="text/javascript" charset="utf-8">
-		function sendSolution1(challenge_id){
-			var myText = document.getElementById("myTextArea").value;
-			
-			socket.emit('process_script', {"script": myText, "group": group, "challenge_id": challenge_id});
+    
+	
+	function create_content(data, root){
+		if(typeof root === 'undefined'){
+			root = $('body');
 		}
 		
-		function change_group(){
-			socket.emit('change_group', {});
+		var c_id = data['id'];
+		var title = data['title'];
+		var text = data['text'];
+		var max_score = data['max_score'];
+		var tips = data['tips'];
+		
+		var div = $('<div id="c_' + c_id + '"></div>');
+		var row_1 = $('<div class="row"></div>');
+		var col_1 = $('<div class="col"></div>');
+		var title = $('<h2>' + title + '</h2>');
+		
+
+		col_1.append(title);
+		row_1.append(col_1);
+		div.append(row_1);
+		
+		var row_2 = $('<div class="row"></div>');
+		var col_2 = $('<div class="col-md-7"></div>');
+		var text = $('<p class="my_text">' + text + '</p>');
+		var col_3 = $('<div class="col-1"></div>');
+		var score = $('<p> Score: <span id="lowscore_' + c_id + '">0</span> out of ' + max_score + '</p> ');
+		
+		col_3.append(score);
+		col_2.append(text);
+		row_2.append(col_2);
+		row_2.append(col_3);
+		div.append(row_2);
+		
+		var row_3 = $('<div class="row"></div>');
+		var col_4 = $('<div class="col"></div>');
+		
+		var tips_container = $('<div class="tips_container"></div>');
+		for (var i = 0; i < tips.length; i++){
+			var tip_button = $('<button onclick="show_tip(' + c_id + ', ' + i + ')">Show tip</button>');
+			var tip_text = $('<p id="tip_' + c_id + '_' + i + '" class="tips_text">' + tips[i] + '</p><br>');
+			tips_container.append(tip_button);
+			tips_container.append(tip_text);
 		}
 		
-		function update_n_users(msg){
-			document.getElementById("n_users").innerHTML = msg['n_users'];
+		var area = $('<textarea id="myTextArea"> </textarea><br>');
+		var exec_button = $('<button onclick="sendSolution(' + c_id + ')"> execute </button>');
+		var result = $('<p id="results_' + c_id + '"> </p>');
+		
+		col_4.append(tips_container);
+		col_4.append(area);
+		col_4.append(exec_button);
+		col_4.append(result);
+		row_3.append(col_4);
+		div.append(row_3);
+		
+		return div;
+	}
+	
+	function load_page(msg) {
+		var root = $('#challenges');
+		
+		for (var i = 0; i < msg.length; i++) {
+			var temp =  create_content(msg[i], root);
+			root.append(temp);
 		}
+	}
+
+	load_page({{ msg|safe }}, function() {});
+	
+
+
+
+	function sendSolution(challenge_id){
+		var myText = document.getElementById("myTextArea").value;
 		
-		function update_scoreboard(msg){
-			console.log(msg);
+		socket.emit('process_script', {"script": myText, "group": group, "challenge_id": challenge_id});
+	}
+	
+	function change_group(){
+		socket.emit('change_group', {});
+	}
+	
+	function update_n_users(msg){
+		document.getElementById("n_users").innerHTML = msg['n_users'];
+	}
+	
+	
+	function update_scoreboard(msg){
+		var root = $('#scoreboard');
+		root.empty();
+		var table = $('<table id="tb_scores"> </table>');
+		var header = $('<tr><th colspan="2">Scoreboard</th></tr>');
+		
+		root.append(table);
+		table.append(header);
+		
+		for (var i = 0; i < msg.length; i++) {
+			var row_1 = $('<tr></tr>');
+			var ch = $('<td colspan="2" class="cell_ch">Challenge ' + (i + 1) + '</td>');
+			row_1.append(ch);
+			table.append(row_1);
+			for (var j = 0; j < msg[i].length; j++) {
+				var group = msg[i][j][0];
+				var score = msg[i][j][1];
+				var row_2 = $('<tr></tr>');
+				var cell = $('<td class="cell_group">' + group + '</td><td class="cell_score">' + score + '</td>');
+				row_2.append(cell);
+				table.append(row_2);
+			}
 		}
-		
-		function feedback(msg){
-			document.getElementById("results").innerHTML = msg['output'];
-			//update score TODO
+	}
+	
+	function feedback(msg){
+		console.log(msg);
+		document.getElementById('results_' + msg['c_id']).innerHTML = msg['output'];
+		//$('#results_' + msg['c_id']).text = msg['output'];
+		console.log(document.getElementById('results_' + msg['c_id']));
+		console.log($('#results_' + msg['c_id']));
+		document.getElementById("lowscore_" + msg['c_id']).innerHTML = msg['score'];
+	}
+	
+	var group = '{{ group }}';
+	
+	var socket = io();
+	
+	socket.emit('join', {'group': group});
+	
+	// Event handler for incoming data - updates number conn users
+	socket.on('update_n_users', update_n_users);
+	
+	// Event handler for incoming data - updates scoreboard
+	socket.on('update_scoreboard', update_scoreboard);
+	
+	// Event handler for incoming data - updates score and displays output
+	socket.on('feedback', feedback);
+	
+	socket.on('redirect', my_redirect);
+	
+	function my_redirect(data){
+		window.location = '{{ redirect }}';
+	}
+	
+	function show_tip(c_id, tip_id){
+		//var tip_text = $('#tip_' + c_id + '_' + tip_id);
+		var tip_text = document.getElementById('tip_' + c_id + '_' + tip_id);
+		if (tip_text.style.display === "none") {
+			tip_text.style.display = "block";
+		} else {
+			tip_text.style.display = "none";
 		}
-		
-		var group = '{{ group }}';
-		
-		var socket = io();
-		
-		socket.emit('join', {'group': group});
-		
-		// Event handler for incoming data - updates number conn users
-        socket.on('update_n_users', update_n_users);
-		
-		// Event handler for incoming data - updates scoreboard
-        socket.on('update_scoreboard', update_scoreboard);
-		
-		// Event handler for incoming data - updates score and displays output
-        socket.on('feedback', feedback);
-		
-		socket.on('redirect', my_redirect);
-		
-		function my_redirect(data){
-			window.location = '{{ redirect }}';
+	}
+	
+	function make_tips_hidden(){
+		var tip_texts = document.getElementsByClassName('tips_text');
+		for (var i = 0; i < tip_texts.length; i++) {
+			tip_texts[i].style.display = "none";
 		}
+	}
+	make_tips_hidden();
 </script>
-
-	<div> 
-		<span> Group: {{ group }} </span>
-		<span>Users connected: </span><span id="n_users"> {{ n_users }} </span>
-		<a href='#' onclick="change_group()"> Change group </a>
-	</div>
-	
-	<br>
-	
-	<div>
-		<p> 
-			<span> {{ text }} </span>
-			<span> Score: <span id="lowscore1"></span> out of {{ high_score_1 }} </span>
-		</p>  
-		
-		<br>
-		
-		<div> Load tips dynamically (TODO)</div>
-		
-		<textarea id="myTextArea"> </textarea>
-		
-		<br>
-		
-		<button onclick="sendSolution1(1)"> execute </button>
-		
-		<br>
-		
-		<span id="results"> </span> 
-	</div>
-	
-
+<!-- <script src="{{ url_for('static', filename='carriages.js') }}"></script> -->
 {% endblock %}
 

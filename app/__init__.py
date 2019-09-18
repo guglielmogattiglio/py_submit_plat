@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_socketio import SocketIO
+from flask_bootstrap import Bootstrap
 
 flask_app = Flask(__name__)
 flask_app.config.from_object(Config)
@@ -12,6 +13,7 @@ migrate = Migrate(flask_app, db)
 login = LoginManager(flask_app)
 login.login_view = 'login'
 socketio = SocketIO(flask_app)
+bootstrap = Bootstrap(flask_app)
 
 #to remove, init sample db
 import build_sample_db

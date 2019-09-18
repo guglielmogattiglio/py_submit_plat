@@ -77,7 +77,7 @@ def login():
 def challenge():
     group = current_user.group.group_name
     n_users = len(current_user.group.users)
-    return render_template('challenge.html', group=group, n_users=n_users, text=sample_challenge['text'], high_score_1=7, redirect=url_for('welcome'))
+    return render_template('challenge.html', group=group, n_users=n_users, msg=sample_challenge, redirect=url_for('welcome'))
 
 
 @socketio.on('connect')
@@ -132,10 +132,10 @@ def process_script(json): #TODO: yet to be tested
             if record.best_score < score:
                 record.best_score = score
             db.session.commit()
-        emit('feedback', {'score': score, 'output': f'Your new score is {score}'})
+        emit('feedback', {'score': score, 'output': f'Your new score is {score}', 'c_id': c_id})
     except:
         output = traceback.format_exc()
-        emit('feedback', {'score': 0, 'output': output})
+        emit('feedback', {'score': 0, 'output': output, 'c_id': c_id})
     
     
 def extract_script(json):
@@ -193,7 +193,8 @@ def my_logout_user():
     logout_user()
     return redirect(url_for('welcome'))
 
-sample_challenge = {"text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.", 
-                    "hints": ["Lorem ipsum dolor sit amet",
-                    "Ut enim ad minim veniam"]
-                    }
+sample_challenge = [{'id': 1, 'title': 'title_1', 'text': 'text_1', 'max_score': 'max_score_1', 'tips': ['tip*1_1', 'tip*1_2', 'tip*1_3', 'tip*1_4']},
+                     {'id': 2, 'title': 'title_2', 'text': 'text_2', 'max_score': 'max_score_2', 'tips': ['tip*2_1', 'tip*2_2']},
+                     {'id': 3, 'title': 'title_3', 'text': 'text_3', 'max_score': 'max_score_3', 'tips': ['tip*3_1']},
+                     {'id': 4, 'title': 'title_4', 'text': 'text_4', 'max_score': 'max_score_4', 'tips': ['tip*4_1', 'tip*4_2', 'tip*4_3', 'tip*4_4']}
+                     ]

@@ -1,6 +1,18 @@
 {% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
-{% block content %}
+{% block my_content %}
+	<div> Fill in the following to join the group.</div>
+	
+	<div class="row">
+        <div class="col-md-4">
+            {{ wtf.quick_form(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+
+{#% block my_content %}
 	<div> Fill in the following to join the group.</div>
 	
 	<form action="" method="POST" novalidate>
@@ -23,4 +35,4 @@
 		
 		<p> {{ form.join() }} </p>
 	</form>
-{% endblock %}
+{% endblock %#}
