@@ -11,12 +11,13 @@ flask_app.config.from_object(Config)
 db = SQLAlchemy(flask_app)
 migrate = Migrate(flask_app, db)
 login = LoginManager(flask_app)
-login.login_view = 'login'
+login.login_view = 'welcome'
 socketio = SocketIO(flask_app)
 bootstrap = Bootstrap(flask_app)
 
 #to remove, init sample db
-import build_sample_db
+#import build_sample_db
+import setup_db
 
 #here you can pre-load challenges and store them in db
 

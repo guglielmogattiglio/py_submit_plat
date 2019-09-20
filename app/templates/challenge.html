@@ -77,6 +77,14 @@ th {
 .cell_group {
 	padding-left: 18px;
 }
+
+#top_row {
+	font-size: 17px;
+}
+
+.nav_bar_top {
+	padding-right: 20px;
+}
 </style>
 {% endblock %}
 
@@ -87,15 +95,10 @@ th {
 		<div class="row">
 			<!-- <div class="col-xs-1"></div> -->
 			<div class="col-xs-12">
-				<div class="row"> 
-					<div class="col-xs-2">
-						<span> Group: {{ group }} </span>
-					</div>
-					<div class="col-xs-2">
-						<span>Users connected: </span><span id="n_users"> {{ n_users }} </span>
-					
-					</div>
-					<div class="col-xs-2">
+				<div class="row" id="top_row"> 
+					<div class="col-md-12">
+						<span class="nav_bar_top"> Group: {{ group }} </span>
+						<span >Users connected: </span><span id="n_users" class="nav_bar_top"> {{ n_users }} </span>
 						<a href='#' onclick="change_group()"> Change group </a>
 					</div>
 				</div>
@@ -173,7 +176,7 @@ th {
 			tips_container.append(tip_text);
 		}
 		
-		var area = $('<textarea id="myTextArea"> </textarea><br>');
+		var area = $('<textarea id="myTextArea"></textarea><br>');
 		var exec_button = $('<button onclick="sendSolution(' + c_id + ')"> execute </button>');
 		var result = $('<p id="results_' + c_id + '"> </p>');
 		
@@ -197,15 +200,21 @@ th {
 			root.append(temp);
 		}
 	}
-
-	load_page({{ msg|safe }}, function() {});
 	
+	function pre_process_msg(msg){
+		msg = JSON.stringify(msg);
+		msg = msg.replace(/(\r\n|\n|\r)/gm,"<br>");
+		return JSON.parse(msg);
+	}
+	msg = {{ msg|safe }};
+	msg = pre_process_msg(msg);
+	
+	load_page(msg, function() {});
 
 
 
 	function sendSolution(challenge_id){
 		var myText = document.getElementById("myTextArea").value;
-		
 		socket.emit('process_script', {"script": myText, "group": group, "challenge_id": challenge_id});
 	}
 	
@@ -227,28 +236,40 @@ th {
 		root.append(table);
 		table.append(header);
 		
+		//create scoreboard
 		for (var i = 0; i < msg.length; i++) {
 			var row_1 = $('<tr></tr>');
 			var ch = $('<td colspan="2" class="cell_ch">Challenge ' + (i + 1) + '</td>');
 			row_1.append(ch);
 			table.append(row_1);
 			for (var j = 0; j < msg[i].length; j++) {
-				var group = msg[i][j][0];
-				var score = msg[i][j][1];
+				var msg_group = msg[i][j][0];
+				var msg_score = msg[i][j][1];
 				var row_2 = $('<tr></tr>');
-				var cell = $('<td class="cell_group">' + group + '</td><td class="cell_score">' + score + '</td>');
+				var cell = $('<td class="cell_group">' + msg_group + '</td><td class="cell_score">' + msg_score + '</td>');
 				row_2.append(cell);
 				table.append(row_2);
+			}
+		}
+		
+		//update challenges scores (assuming another team member scored).
+		//Notice that this also fixes non-updating initial score values when html renders
+		for (var i = 0; i < msg.length; i++) {
+			for (var j = 0; j < msg[i].length; j++) {
+				var msg_group = msg[i][j][0];
+				var msg_score = msg[i][j][1];
+				console.log(msg_group, group);
+				if (msg_group == group){
+					document.getElementById("lowscore_" + (i+1)).innerHTML = msg_score;
+				}
 			}
 		}
 	}
 	
 	function feedback(msg){
-		console.log(msg);
-		document.getElementById('results_' + msg['c_id']).innerHTML = msg['output'];
+		output = msg['output'].replace(/(\r\n|\n|\r)/gm,"<br>");
+		document.getElementById('results_' + msg['c_id']).innerHTML = output;
 		//$('#results_' + msg['c_id']).text = msg['output'];
-		console.log(document.getElementById('results_' + msg['c_id']));
-		console.log($('#results_' + msg['c_id']));
 		document.getElementById("lowscore_" + msg['c_id']).innerHTML = msg['score'];
 	}
 	

@@ -2,8 +2,53 @@
 
 {% block title %}Python Challenges Platform{% endblock %}
 
+{% block styles %}
+{{ super() }}
+<style>
+.footer{
+	background-color: #d5d6d7;
+	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.12);
+	box-sizing: border-box;
+	width: 100%;
+	text-align: center;
+	font: normal 18px sans-serif;
+
+}
+
+
+.footer .footer_creator{
+	color:  #8f9296;
+	font-size: 14px;
+	margin: 0;
+}
+
+.footer_a{
+	display:inline-block;
+	text-decoration: none;
+	color: inherit;
+	font-size: 14px;
+}
+
+#page-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+#content-wrap {
+  padding-bottom: 200px;    /* Footer height */
+}
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 30px;            /* Footer height */
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
+<div id="page-container">
 	{% with messages = get_flashed_messages() %}
 		  {% if messages %}
 			<script>
@@ -14,9 +59,25 @@
 			</script>
 		  {% endif %}
 	{% endwith %}
-	
-	<h1> Python Challenges Platform</h1>
-	
-	{% block my_content %}{% endblock %}
+	<div id="content-wrap">
+		<div class="container">
+			<div class="row ">
+				<div class="col-md-12">
+					<h1 align="center"> Python Challenges Platform</h1>
+					<br><br>
+				</div>
+			</div>
+			<div class="container">
+				
+				{% block my_content %}{% endblock %}
+			</div>
+		</div>
+	</div>
+	<footer class="footer" id="footer">
+		<p class="footer_creator">Made by Guglielmo Gattiglio</p>
+		<span class="footer_creator">Check me on </span><a href="#" class="footer_a">GitHub</a>
+	</footer>
 </div>
+
+
 {% endblock %}

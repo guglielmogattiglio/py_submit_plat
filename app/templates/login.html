@@ -2,12 +2,15 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block my_content %}
-	<div> Fill in the following to join the group.</div>
-	
 	<div class="row">
-        <div class="col-md-4">
-            {{ wtf.quick_form(form) }}
-        </div>
+		<div class="col-xs-4"></div>
+		<div class="col-md-4">
+				<p">Fill in the following to join the group.</p>
+			<div> 
+				{{ wtf.quick_form(form) }}
+			</div>
+		</div>
+		<div class="col-xs-4"></div>
     </div>
 {% endblock %}
 

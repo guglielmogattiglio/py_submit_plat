@@ -13,7 +13,11 @@ class Groups(db.Model):
     
 class Challenges(db.Model):
     challenge_id = db.Column(db.Integer, primary_key=True)
-    max_score = db.Column(db.Integer, nullable=False)
+    specification = db.Column(db.Text, nullable=False)
+    allowed_functions = db.Column(db.Text, nullable=False)
+    required_modules = db.Column(db.Text, nullable=False)
+    solutions = db.Column(db.Text, nullable=False)
+    func_name = db.Column(db.String(64), nullable=False)
     challenge_scoreboard = db.relationship("ChallengeGroup", cascade="all, delete-orphan", backref="challenge")
     def __repr__(self):
         return f'<Challenge {self.challenge_id}>'
