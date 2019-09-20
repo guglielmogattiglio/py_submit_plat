@@ -258,7 +258,6 @@ th {
 			for (var j = 0; j < msg[i].length; j++) {
 				var msg_group = msg[i][j][0];
 				var msg_score = msg[i][j][1];
-				console.log(msg_group, group);
 				if (msg_group == group){
 					document.getElementById("lowscore_" + (i+1)).innerHTML = msg_score;
 				}
@@ -274,6 +273,7 @@ th {
 	}
 	
 	var group = '{{ group }}';
+	var user_id = '{{ id }}';
 	
 	var socket = io();
 	
@@ -311,6 +311,7 @@ th {
 		}
 	}
 	make_tips_hidden();
+	
 </script>
 <!-- <script src="{{ url_for('static', filename='carriages.js') }}"></script> -->
 {% endblock %}
