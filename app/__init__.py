@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_socketio import SocketIO
 from flask_bootstrap import Bootstrap
+from sqlalchemy_utils import database_exists
 
 flask_app = Flask(__name__)
 flask_app.config.from_object(Config)
@@ -17,7 +18,10 @@ bootstrap = Bootstrap(flask_app)
 
 #to remove, init sample db
 #import build_sample_db
-import setup_db
+if database_exists(Config.SQLALCHEMY_DATABASE_URI):
+    import setup_db
+else:
+    print("WARNING: database not connected")
 
 #here you can pre-load challenges and store them in db
 
