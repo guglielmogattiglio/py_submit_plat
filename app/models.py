@@ -32,7 +32,7 @@ class ChallengeGroup(db.Model):
           
     
 class Users(db.Model, UserMixin):
-    user_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.BigInteger, primary_key=True)
     group_id = db.Column(db.Integer, db.ForeignKey('groups.group_id'))
     group = db.relationship("Groups", backref="users")
     

@@ -1,8 +1,8 @@
 """initial commit
 
-Revision ID: 63f5d0b2a377
+Revision ID: ca4e7a4f9e06
 Revises: 
-Create Date: 2019-09-19 19:06:11.118355
+Create Date: 2019-09-21 01:25:03.709461
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '63f5d0b2a377'
+revision = 'ca4e7a4f9e06'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -45,7 +45,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('group_id', 'challenge_id')
     )
     op.create_table('users',
-    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.BigInteger(), nullable=False),
     sa.Column('group_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['group_id'], ['groups.group_id'], ),
     sa.PrimaryKeyConstraint('user_id')
