@@ -121,7 +121,7 @@ def push_updates():
 @socketio.on('process_script')
 def process_script(json): #TODO: yet to be tested
     if current_user.get_id() is None:
-        raise Exception('exc_1')
+        emit('redirect', {})
     
     script, c_id, group_name = extract_script(json)
     #fetch from db
@@ -133,7 +133,7 @@ def process_script(json): #TODO: yet to be tested
         output = f'Your new score is {score}'
     except Exception as e:
         print(traceback.format_exc())
-        output = current_user.get_id() + str(e)
+        output = "Error for user: %s\n" % current_user.get_id() + str(e)
         score = 0
     group = Groups.query.filter_by(group_name=group_name).first()
     record = ChallengeGroup.query.get((group.group_id, c_id))
@@ -207,8 +207,10 @@ def evaluate_script(script, safe_dict, func_name, sol):
 
 @socketio.on('change_group')
 def return_home(msg):
-     my_logout_user()
-     emit('redirect', {})
+    if current_user.get_id() is None:
+        emit('redirect', {})
+    my_logout_user()
+    emit('redirect', {})
     
 @socketio.on('join')
 def on_join(data):
