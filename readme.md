@@ -1,6 +1,6 @@
 # Python Challenges Platform
 
-A platform to conveniently run Python programming competitions. 
+A platform to conveniently run Python programming competitions.  
 Students divide in teams to solve programming exercises, upload their code to the platform which checks correctness and assigns it a score. May the best team win!
 
 ### Init
@@ -16,7 +16,7 @@ By default the webserver is accessible at http://127.0.0.1:5000, this is handy b
 
 ### How It Works
 
-After cloning the project, you need to edit `/source/challenges.py` and `/source/solutions.py`, the former contains the text and related information of each challenge. The second includes the solutions (test cases) used to check the uploaded script: the rationale is that usually just one test is not sufficient to asses the correctness of the provided script (corner cases). The bulk of the information regarding the platform's functioning is detailed in `/app/templates/welcome.html`, which is served at `/welcome` if one visits the webapp. Here we summarize the main features:
+After cloning the project, you need to edit `/source/challenges.py` and `/source/solutions.py`, the former contains the text and related information of each challenge. The second includes the solutions (test cases) used to check the uploaded script: the rationale is that usually just one test is not sufficient to asses the correctness of the provided script (corner cases). The bulk of the information regarding the platform's functioning is detailed in `/app/templates/welcome.html`, which is served at `/welcome` if one visits the webapp. Here we summarize the main **features**:
 * tracking registration/login of users as members of teams
 * data updated in real-time within teams, for instance if a team member submits some code all the other members see the new score 
 * real-time scoreboard showing top three teams for each challenge
