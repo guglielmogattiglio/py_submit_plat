@@ -109,7 +109,7 @@ def push_updates():
                     socketio.emit('update_n_users', 
                           {'n_users': n_users}, room=group.group_name)
                     
-            #update leatherboard TODO:test it
+            #update leatherboard 
             challenges = Challenges.query.order_by(Challenges.challenge_id).all()
             result = [[(c_group[1].group.group_name, c_group[1].last_score) for c_group in \
                        db.session.query(Challenges, ChallengeGroup).filter_by(challenge_id=c.challenge_id).\
@@ -119,7 +119,7 @@ def push_updates():
             
 
 @socketio.on('process_script')
-def process_script(json): #TODO: yet to be tested
+def process_script(json): 
     if current_user.get_id() is None:
         emit('redirect', {})
     
