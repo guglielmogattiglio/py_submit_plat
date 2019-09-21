@@ -176,7 +176,7 @@ th {
 			tips_container.append(tip_text);
 		}
 		
-		var area = $('<textarea id="myTextArea"></textarea><br>');
+		var area = $('<textarea id="myTextArea_' + c_id +'"></textarea><br>');
 		var exec_button = $('<button onclick="sendSolution(' + c_id + ')"> execute </button>');
 		var result = $('<p id="results_' + c_id + '"> </p>');
 		
@@ -214,7 +214,7 @@ th {
 
 
 	function sendSolution(challenge_id){
-		var myText = document.getElementById("myTextArea").value;
+		var myText = document.getElementById("myTextArea_" + challenge_id).value;
 		socket.emit('process_script', {"script": myText, "group": group, "challenge_id": challenge_id});
 	}
 	
