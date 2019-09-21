@@ -127,8 +127,8 @@ def process_script(json):
     #fetch from db
     ch = Challenges.query.filter_by(challenge_id=c_id).first()
     safe_dict = make_safe_dict(ch.allowed_functions, ch.required_modules)
-    script = validate_script(script)
     try:
+        script = validate_script(script)
         score = evaluate_script(script, safe_dict, ch.func_name, ch.solutions)
         output = f'Your new score is {score}'
     except Exception as e:
