@@ -4,6 +4,7 @@ from app.forms import WelcomeForm, SignupForm, LoginForm
 from app.models import Groups, Users, Challenges, ChallengeGroup
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_socketio import emit, join_room, leave_room, disconnect
+import db_connection as db_pymysql
 
 import threading
 import traceback
@@ -101,19 +102,17 @@ def push_updates():
     '''
     while True:
         socketio.sleep(3) 
-        if Users.query.first() is not None: #there are conn users
-            groups = Groups.query.all()
+        if db_pymysql.check_users_connected(): #there are conn users
+            groups = db_pymysql.get_groups()
             for group in groups: #need to update all groups...
-                n_users = len(db.session.query(Users.user_id).filter_by(group_id=group.group_id).join(Groups).all())
+                n_users = db_pymysql.get_n_users(group['group_id'])
                 if n_users > 0:             #... but only if active
                     socketio.emit('update_n_users', 
-                          {'n_users': n_users}, room=group.group_name)
+                          {'n_users': n_users}, room=group['group_name'])
                     
             #update leatherboard 
-            challenges = Challenges.query.order_by(Challenges.challenge_id).all()
-            result = [[(c_group[1].group.group_name, c_group[1].last_score) for c_group in \
-                       db.session.query(Challenges, ChallengeGroup).filter_by(challenge_id=c.challenge_id).\
-                       join(Challenges).order_by(ChallengeGroup.last_score.desc()).limit(3).all()] for c in challenges]
+            challenges = db_pymysql.get_ordered_challenge_id()
+            result = [[(group['group_name'], group['last_score']) for group in db_pymysql.get_top_3_groups(c['challenge_id'])] for c in challenges]
             socketio.emit('update_scoreboard', result, broadcast=True)
             
             
