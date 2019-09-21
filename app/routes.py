@@ -146,7 +146,7 @@ def process_script(json):
         if record.best_score < score:
             record.best_score = score
     db.session.commit()
-    emit('feedback', {'score': 0, 'output': output, 'c_id': c_id})
+    emit('feedback', {'score': score, 'output': output, 'c_id': c_id})
     
     
 def extract_script(json):
