@@ -9,3 +9,9 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    PYMYSQL_LOGIN_DATA = {'user': os.environ.get('user'), 
+                          'password': os.environ.get('password'), 
+                          'host': os.environ.get('host'), 
+                          'port': int(os.environ.get('port')),
+                          'database': os.environ.get('database')}
