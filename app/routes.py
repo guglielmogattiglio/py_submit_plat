@@ -11,6 +11,7 @@ import traceback
 import random
 import re
 import ast
+import logging
 
 thread = None
 thread_lock = threading.Lock()
@@ -131,7 +132,7 @@ def process_script(json):
         score = evaluate_script(script, safe_dict, ch.func_name, ch.solutions)
         output = f'Your new score is {score}'
     except Exception as e:
-        print(traceback.format_exc())
+        logging.error("Error for user: %s\n" % current_user.get_id() + traceback.format_exc())
         output = "Error for user: %s\n" % current_user.get_id() + str(e)
         score = 0
     group = Groups.query.filter_by(group_name=group_name).first()
