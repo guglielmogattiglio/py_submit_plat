@@ -108,7 +108,16 @@ for i in range(len(c)):
     if len(modules) != 0:
         imports = 'import ' + "\nimport ".join(modules)
     
-    new_chall = Challenges(challenge_id=c[i]['id'], specification=str(c[i]), allowed_functions=str(c[i]['allowed_functions']), 
+    record = Challenges.query.filter_by(challenge_id=int(c[i]['id'])).first()
+    if record is None:
+        new_chall = Challenges(challenge_id=c[i]['id'], specification=str(c[i]), allowed_functions=str(c[i]['allowed_functions']), 
                            required_modules=imports, solutions=str(s[c[i]['id']]), func_name=c[i]['func_name'].strip())
-    db.session.add(new_chall)
+        db.session.add(new_chall)
+    else:
+        record.specification = str(c[i])
+        record.allowed_functions = str(c[i]['allowed_functions'])
+        record.required_modules = imports
+        record.solutions = str(s[c[i]['id']])
+        record.func_name = c[i]['func_name'].strip()
+    
 db.session.commit()
