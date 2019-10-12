@@ -1,13 +1,6 @@
 from app import db
 from app.models import Groups, Challenges, ChallengeGroup, Users
 
-#empty db
-ChallengeGroup.query.delete()
-Users.query.delete()
-Groups.query.delete()
-Challenges.query.delete()
-db.session.commit()
-
 #check correct challenges setup
 from source import challenges
 
