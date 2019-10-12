@@ -25,8 +25,6 @@ def index():
 
 @flask_app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
-    if current_user.is_authenticated:
-        my_logout_user()
     form = WelcomeForm()
     if form.validate_on_submit():
         create = form.create.data
@@ -40,7 +38,8 @@ def welcome():
 @flask_app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if current_user.is_authenticated:
-        my_logout_user()
+        flash('Cannot create group as you are already logged in. Change group first.')
+        return redirect(url_for('challenge'))
     form = SignupForm()
     if form.validate_on_submit():
         #save data to Db
@@ -59,7 +58,8 @@ def signup():
 @flask_app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        my_logout_user()
+        flash('Cannot create group as you are already logged in. Change group first.')
+        return redirect(url_for('challenge'))
     form = LoginForm()
     if form.validate_on_submit():
         #check credentials
@@ -249,13 +249,3 @@ def my_logout_user():
     db.session.commit()
     logout_user()
     return redirect(url_for('welcome'))
-
-my_challenges = [{'id': 1, 'title': 'The + Operation', 
-                 'text': 'Learn how to code summation in Python. The function you have to write takes two numeric inputs and returns their sum.', 
-                 'max_score': 5, 'tips': ['No tips for this exercise, it is straightforward']},
-                 {'id': 2, 'title': 'Reverse Me', 
-                  'text': 'You have to write a function that given a strings, it reverses it. <br>For example, the word <i>python</i> would become <i>nohtyp</i>. The output needs to be in lowercase letters with no additional whitespaces.', 
-                  'max_score': 8, 'tips': ['What if the initial string has an uppercase letter?', 'Note that the string itself may include whitespaces, in that case you have to leave them!']},
-                 {'id': 3, 'title': 'title_3', 'text': 'text_3', 'max_score': 'max_score_3', 'tips': []},
-                 {'id': 4, 'title': 'title_4', 'text': 'text_4', 'max_score': 'max_score_4', 'tips': ['tip*4_1', 'tip*4_2', 'tip*4_3', 'tip*4_4']}
-                 ]
