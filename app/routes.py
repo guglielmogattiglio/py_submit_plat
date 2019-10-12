@@ -12,6 +12,7 @@ import random
 import re
 import ast
 import logging
+import func_timeout
 
 thread = None
 thread_lock = threading.Lock()
@@ -129,8 +130,8 @@ def process_script(json):
     safe_dict = make_safe_dict(ch.allowed_functions, ch.required_modules)
     try:
         script = validate_script(script)
-        score = evaluate_script(script, safe_dict, ch.func_name, ch.solutions)
-        output = f'Your new score is {score}'
+        score, outcome = evaluate_script(script, safe_dict, ch.func_name, ch.solutions)
+        output = f'Your new score is {score}\n' + "\n".join(outcome)
     except Exception as e:
         logging.error("Error for user: %s\n" % current_user.get_id() + traceback.format_exc())
         output = "Error for user: %s\n" % current_user.get_id() + str(e)
@@ -191,18 +192,27 @@ def evaluate_script(script, safe_dict, func_name, sol):
     exec(comp_code, safe_dict, local)
     
     sol = ast.literal_eval(sol)
-    c = 0
+    outcome = []
+    score = 0
+    c = 1
     for test in sol:
         try:
-            if local[func_name](*test[0]) == test[1]:
-                c += 1
+            ret_value = func_timeout.func_timeout(2, local[func_name], args=test[0])
+            if ret_value == test[1]:
+                outcome.append(f'test {c}: passed')
+                score += 1
+            else:
+                outcome.append(f'test {c}: failed')
         except KeyError:
             raise Exception('KeyError raised during execution. Check that your function is called %s.\nIf that is correct, it is something within your code, for example check that all dictionaries operations work as expected.'%func_name) from None
         except TypeError as e:
             raise Exception(str(e)) from None
+        except func_timeout.exceptions.FunctionTimedOut:
+            outcome.append(f'test {c}: timed out')
         except:
             raise
-    return c
+        c += 1
+    return score, outcome
         
 
 @socketio.on('change_group')
