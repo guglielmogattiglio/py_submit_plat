@@ -13,7 +13,7 @@ db = SQLAlchemy(flask_app)
 migrate = Migrate(flask_app, db)
 login = LoginManager(flask_app)
 login.login_view = 'welcome'
-socketio = SocketIO(flask_app)
+socketio = SocketIO(flask_app, async_mode='eventlet')
 bootstrap = Bootstrap(flask_app)
 
 #to remove, init sample db
