@@ -2,8 +2,28 @@
 allowed_functions: can put both built-in and from modules, though make sure to also add the module to required_modules. For both of them you need to add them to a list.
 '''
 
+ch1_text = '''
+Learn how to code summation in Python. 
+You have to
+ write a function 
+ called <i>my_sum</i> which
+ takes two numeric inputs 
+ and returns 
+ their sum. <br>
+Example:
+<pre>
+In [1]: my_sum(1,2)
+Out[1]: 3
+</pre>
+Possible solution:
+<pre>
+def my_sum(a,b):
+    return a+b
+</pre>
+'''
+
 my_challenges = [{'id': 1, 'title': 'The + Operation', 
-                 'text': 'Learn how to code summation in Python. You have to write a function called <i>my_sum</i> which takes two numeric inputs and returns their sum.', 
+                 'text': ch1_text, 
                  'func_name': 'my_sum', 'max_score': 5, 'tips': ['No tips for this exercise, it is straightforward'], 
                  'allowed_functions': ['math.cos', 'math.sin'], 'required_modules': ['math']},
                  {'id': 2, 'title': 'Reverse Me', 
