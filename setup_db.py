@@ -105,6 +105,7 @@ for i in range(len(c)):
 for i in range(len(c)):
     #pre-process required_modules
     modules = c[i]['required_modules']
+    imports = ''
     if len(modules) != 0:
         imports = 'import ' + "\nimport ".join(modules)
     
