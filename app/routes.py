@@ -1,7 +1,7 @@
 from app import flask_app, db, socketio
 from flask import redirect, url_for, render_template, flash
 from app.forms import WelcomeForm, SignupForm, LoginForm
-from app.models import Groups, Users, Challenges, ChallengeGroup
+from app.models import Groups, Users, Challenges, ChallengeGroup, Submissions
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_socketio import emit, join_room, leave_room, disconnect
 import db_connection as db_pymysql
@@ -124,18 +124,21 @@ def process_script(json):
     if current_user.get_id() is None:
         emit('redirect', {})
     
-    script, c_id, group_name = extract_script(json)
+    orig_script, c_id, group_name = extract_script(json)
     #fetch from db
     ch = Challenges.query.filter_by(challenge_id=c_id).first()
     safe_dict = make_safe_dict(ch.allowed_functions, ch.required_modules)
+    has_raised_exc = False
     try:
-        script = validate_script(script)
-        score, outcome = evaluate_script(script, safe_dict, ch.func_name, ch.solutions)
+        script = validate_script(orig_script)
+        score, outcome, outcome_short = evaluate_script(script, safe_dict, ch.func_name, ch.solutions)
         output = f'Your new score is {score}\n' + "\n".join(outcome)
     except Exception as e:
         logging.error("Error for user: %s\n" % current_user.get_id() + traceback.format_exc())
         output = "Error for user: %s\n" % current_user.get_id() + str(e)
         score = 0
+        has_raised_exc = True
+        outcome_short = []
     group = Groups.query.filter_by(group_name=group_name).first()
     record = ChallengeGroup.query.get((group.group_id, c_id))
     if record is None:
@@ -147,6 +150,13 @@ def process_script(json):
         if record.best_score < score:
             record.best_score = score
     db.session.commit()
+    
+    #log uploaded data to db
+    submission = Submissions(group_id=group.group_id, challenge_id=c_id, code=orig_script,
+                             score=score, output_result=",".join(map(str, outcome_short)), has_raised_exc=has_raised_exc)
+    db.session.add(submission)
+    db.session.commit()
+    
     emit('feedback', {'score': score, 'output': output, 'c_id': c_id})
     
     
@@ -193,26 +203,30 @@ def evaluate_script(script, safe_dict, func_name, sol):
     
     sol = ast.literal_eval(sol)
     outcome = []
+    outcome_short = [] #1=pass, 0=fail, -1=timed-out
     score = 0
     c = 1
     for test in sol:
         try:
-            ret_value = func_timeout.func_timeout(2, local[func_name], args=test[0])
+            ret_value = func_timeout.func_timeout(1, local[func_name], args=test[0])
             if ret_value == test[1]:
                 outcome.append(f'test {c}: passed')
+                outcome_short.append(1)
                 score += 1
             else:
                 outcome.append(f'test {c}: failed')
+                outcome_short.append(0)
         except KeyError:
             raise Exception('KeyError raised during execution. Check that your function is called %s.\nIf that is correct, it is something within your code, for example check that all dictionaries operations work as expected.'%func_name) from None
         except TypeError as e:
             raise Exception(str(e)) from None
         except func_timeout.exceptions.FunctionTimedOut:
             outcome.append(f'test {c}: timed out')
+            outcome_short.append(-1)
         except:
             raise
         c += 1
-    return score, outcome
+    return score, outcome, outcome_short
         
 
 @socketio.on('change_group')
