@@ -35,7 +35,7 @@ Note also that, given the nature of data exchanged between client and server and
 The platform is fully working as is. Useful features which may come in the future are:
 * Add password hashing
 * Add code validation function, with the idea of checking user code for specific constructs whose usage wants to be prevented (e.g. list comprehensions, ifs, loops, etc..)
-* Add time constraint while running each test case, for specific challenges which require code optimization and/or to shifts students' focus on this factor. Return test outcome one by one to the client (passed, timed out, failed)
+* Add time constraint while running each test case, for specific challenges which require code optimization and/or to shifts students' focus on this factor (func_timeout branch, somewhat unstable). Return test outcome one by one to the client (passed, timed out, failed) (not implemented, could add client to room=user_id and emit to this room)
 * Integrate reading of test cases from text files, to address bigger input/output processing 
 * Create different exercise types, such as classic (no constraints), timed (time limit on test cases), etc
 * Add max overall challenge time, expired which the teams won't be able to upload code any longer and the final scores will be published
