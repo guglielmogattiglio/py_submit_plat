@@ -207,6 +207,7 @@ def evaluate_script(script, safe_dict, func_name, sol):
     score = 0
     c = 1
     for test in sol:
+        socketio.sleep(0)
         try:
             ret_value = func_timeout.func_timeout(1, local[func_name], args=test[0])
             if ret_value == test[1]:
