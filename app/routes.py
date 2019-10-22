@@ -1,5 +1,5 @@
 from app import flask_app, db, socketio
-from flask import redirect, url_for, render_template, flash
+from flask import redirect, url_for, render_template, flash, request
 from app.forms import WelcomeForm, SignupForm, LoginForm
 from app.models import Groups, Users, Challenges, ChallengeGroup, Submissions
 from flask_login import login_user, current_user, logout_user, login_required
@@ -131,8 +131,9 @@ def process_script(json):
     has_raised_exc = False
     try:
         script = validate_script(orig_script)
-        score, outcome, outcome_short = evaluate_script(script, safe_dict, ch.func_name, ch.solutions)
-        output = f'Your new score is {score}\n' + "\n".join(outcome)
+        for score, outcome, outcome_short in evaluate_script(script, safe_dict, ch.func_name, ch.solutions):
+            socketio.emit('feedback', {'score': score, 'output': "\n".join(outcome), 'c_id': c_id}, room=request.sid)
+        output = "\n".join(outcome) + f'\nYour new score is {score}' 
     except Exception as e:
         logging.error("Error for user: %s\n" % current_user.get_id() + traceback.format_exc())
         output = "Error for user: %s\n" % current_user.get_id() + str(e)
@@ -206,28 +207,30 @@ def evaluate_script(script, safe_dict, func_name, sol):
     outcome_short = [] #1=pass, 0=fail, -1=timed-out
     score = 0
     c = 1
-    for test in sol:
-        socketio.sleep(0)
-        try:
-            ret_value = func_timeout.func_timeout(1, local[func_name], args=test[0])
-            if ret_value == test[1]:
-                outcome.append(f'test {c}: passed')
-                outcome_short.append(1)
-                score += 1
-            else:
-                outcome.append(f'test {c}: failed')
-                outcome_short.append(0)
-        except KeyError:
-            raise Exception('KeyError raised during execution. Check that your function is called %s.\nIf that is correct, it is something within your code, for example check that all dictionaries operations work as expected.'%func_name) from None
-        except TypeError as e:
-            raise Exception(str(e)) from None
-        except func_timeout.exceptions.FunctionTimedOut:
-            outcome.append(f'test {c}: timed out')
-            outcome_short.append(-1)
-        except:
-            raise
-        c += 1
-    return score, outcome, outcome_short
+    
+    try:
+        for test in sol:
+            socketio.sleep(0)
+            try:
+                ret_value = func_timeout.func_timeout(1, local[func_name], args=test[0])
+                if ret_value == test[1]:
+                    outcome.append(f'test {c}: passed')
+                    outcome_short.append(1)
+                    score += 1
+                else:
+                    outcome.append(f'test {c}: failed')
+                    outcome_short.append(0)
+            except func_timeout.exceptions.FunctionTimedOut:
+                outcome.append(f'test {c}: timed out')
+                outcome_short.append(-1)
+            c += 1
+            yield score, outcome, outcome_short
+    except KeyError:
+        raise Exception('KeyError raised during execution. Check that your function is called %s.\nIf that is correct, it is something within your code, for example check that all dictionaries operations work as expected.'%func_name) from None
+    except TypeError as e:
+        raise Exception(str(e)) from None
+    except:
+        raise
         
 
 @socketio.on('change_group')
