@@ -1,6 +1,7 @@
 from app import db
 from flask_login import UserMixin
 from app import login
+from datetime import datetime
 
 class Groups(db.Model):
     group_id = db.Column(db.Integer, primary_key=True)
@@ -44,5 +45,15 @@ class Users(db.Model, UserMixin):
 @login.user_loader
 def load_user(id):
     return Users.query.get(int(id))
+
+class Submissions(db.Model):
+    submission_id = db.Column(db.Integer, primary_key=True)
+    group_id = db.Column(db.Integer, db.ForeignKey('groups.group_id'))
+    challenge_id= db.Column(db.Integer, db.ForeignKey('challenges.challenge_id'))
+    submission_time = db.Column(db.DateTime, nullable=False, default=datetime.now)
+    code = db.Column(db.Text, nullable=False)
+    score = db.Column(db.Integer, nullable=False)
+    output_result = db.Column(db.Text, nullable=False)
+    has_raised_exc = db.Column(db.Boolean, nullable=False)    
 
     
