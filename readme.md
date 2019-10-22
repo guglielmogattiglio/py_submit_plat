@@ -26,6 +26,7 @@ After cloning the project, you need to edit `/source/challenges.py` and `/source
 * real-time scoreboard showing top three teams for each challenge
 * possibility to prevent access to Python functions and modules (default setting)
 * automated system for submitted code evaluation 
+* possibility to set max running time for each test case (default 1 sec)
 
 ### Security Considerations
 Due to the nature of the project, which is that to execute and test arbitrary Python code, numerous security issues are raised. The principal one is without doubt the use of `exec()`. The first step is that of preventing access to builtins, by passing `{'__builtins__':None}` as globals. Unfortunately that is not enough (as detailed [here](https://nedbatchelder.com/blog/201206/eval_really_is_dangerous.html)), so to address this new issue, the platform won't run any code containing '__', which basically is explicitly revoking access to Python internal constructs. It is just a slight limitation, as in most of the cases these are not needed especially in the scope of a challenge. That should be enough. 
@@ -35,7 +36,6 @@ Note also that, given the nature of data exchanged between client and server and
 The platform is fully working as is. Useful features which may come in the future are:
 * Add password hashing
 * Add code validation function, with the idea of checking user code for specific constructs whose usage wants to be prevented (e.g. list comprehensions, ifs, loops, etc..)
-* Add time constraint while running each test case, for specific challenges which require code optimization and/or to shifts students' focus on this factor (func_timeout branch, somewhat unstable). Return test outcome one by one to the client (passed, timed out, failed) (not implemented, could add client to room=user_id and emit to this room)
 * Integrate reading of test cases from text files, to address bigger input/output processing 
 * Create different exercise types, such as classic (no constraints), timed (time limit on test cases), etc
 * Add max overall challenge time, expired which the teams won't be able to upload code any longer and the final scores will be published
