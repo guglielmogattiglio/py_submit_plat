@@ -3,6 +3,7 @@ from app.models import Groups, Challenges, ChallengeGroup, Users
 
 #check correct challenges setup
 from source import challenges
+import logging 
 
 checks = {'id': 'The challenge id is missing, in /source/challenges.py, challenge %d',
  'title': '','text': '','max_score': '','tips': '','allowed_functions': '','required_modules': '', 'func_name': ''}
@@ -100,6 +101,13 @@ def check_funcs(c, i):
 for i in range(len(c)):
     check_funcs(c[i], i)
 
+
+#check if # challenges on Db match # challenges on local version, if not log a warning
+#rationale: can't delete them because of (possible) foreign key constraints, yet
+#if have more challenges on server will display a cached copy of an old one
+
+if Challenges.query.count() > len(c):
+    logging.warning('Found more challenges on Db than on current version, potentially unwanted challenges will be displayed!')
 
 #add challenges and solutions to db
 for i in range(len(c)):

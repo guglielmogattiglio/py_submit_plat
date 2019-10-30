@@ -195,7 +195,14 @@ def evaluate_script(script, safe_dict, func_name, sol):
     c = 0
     for test in sol:
         try:
-            if local[func_name](*test[0]) == test[1]:
+            ret_value = local[func_name](*test[0])
+            if isinstance(test[1], float) or isinstance(ret_value, float):
+                    cond = abs(ret_value - test[1]) < 1e-5
+                else:
+                    cond = ret_value == test[1]
+                    
+                if cond:
+            if  cond:
                 c += 1
         except KeyError:
             raise Exception('KeyError raised during execution. Check that your function is called %s.\nIf that is correct, it is something within your code, for example check that all dictionaries operations work as expected.'%func_name) from None
@@ -204,6 +211,7 @@ def evaluate_script(script, safe_dict, func_name, sol):
         except:
             raise
     return c
+
         
 
 @socketio.on('change_group')
