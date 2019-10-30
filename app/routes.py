@@ -213,7 +213,12 @@ def evaluate_script(script, safe_dict, func_name, sol):
             socketio.sleep(0)
             try:
                 ret_value = func_timeout.func_timeout(1, local[func_name], args=test[0])
-                if ret_value == test[1]:
+                if isinstance(test[1], float) or isinstance(ret_value, float):
+                    cond = abs(ret_value - test[1]) < 1e-5
+                else:
+                    cond = ret_value == test[1]
+                    
+                if cond:
                     outcome.append(f'test {c}: passed')
                     outcome_short.append(1)
                     score += 1
