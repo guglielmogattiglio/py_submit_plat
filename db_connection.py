@@ -85,7 +85,7 @@ def get_conn_users():
 def get_all_results():
     conn = connect()
     cursor = conn.cursor()
-    sql = "select g.group_name, c.challenge_id, c.n_attempts, c.best_score, c.last_score from challenge_group as c inner join groups as g on c.group_id=g.group_id sort by c.challenge_id asc, c.last_score desc"
+    sql = "select g.group_name, c.challenge_id, c.n_attempts, c.best_score, c.last_score from challenge_group as c inner join groups as g on c.group_id=g.group_id order by c.challenge_id asc, c.last_score desc"
     cursor.execute(sql)
     records = cursor.fetchall()
     if records is None:

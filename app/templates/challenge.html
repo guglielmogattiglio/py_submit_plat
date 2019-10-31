@@ -228,43 +228,55 @@ th {
 	
 	
 	function update_scoreboard(msg){
+    	var max_row_per_chall = 3;
+
 		var root = $('#scoreboard');
 		root.empty();
 		var table = $('<table id="tb_scores"> </table>');
 		var header = $('<tr><th colspan="2">Scoreboard</th></tr>');
-		
+
 		root.append(table);
 		table.append(header);
-		
+
 		//create scoreboard
+		var prev_chall_id = "";
+		var row_count_current_chall = 0;
 		for (var i = 0; i < msg.length; i++) {
-			var row_1 = $('<tr></tr>');
-			var ch = $('<td colspan="2" class="cell_ch">Challenge ' + (i + 1) + '</td>');
-			row_1.append(ch);
-			table.append(row_1);
-			for (var j = 0; j < msg[i].length; j++) {
-				var msg_group = msg[i][j][0];
-				var msg_score = msg[i][j][1];
+			var msg_group = msg[i]['group_name'];
+			var msg_score = msg[i]['last_score'];
+			var current_chall_id = msg[i]['challenge_id'];
+			
+			if (prev_chall_id != current_chall_id){
+				var row_1 = $('<tr></tr>');
+				var ch = $('<td colspan="2" class="cell_ch">Challenge ' + (i + 1) + '</td>');
 				var row_2 = $('<tr></tr>');
 				var cell = $('<td class="cell_group">' + msg_group + '</td><td class="cell_score">' + msg_score + '</td>');
+				prev_chall_id = current_chall_id;
+				row_count_current_chall = 1
+				row_1.append(ch);
+				table.append(row_1);
 				row_2.append(cell);
 				table.append(row_2);
-			}
-		}
-		
-		//update challenges scores (assuming another team member scored).
-		//Notice that this also fixes non-updating initial score values when html renders
-		for (var i = 0; i < msg.length; i++) {
-			for (var j = 0; j < msg[i].length; j++) {
-				var msg_group = msg[i][j][0];
-				var msg_score = msg[i][j][1];
-				if (msg_group == group){
-					document.getElementById("lowscore_" + (i+1)).innerHTML = msg_score;
+				
+			} else {
+				if (row_count_current_chall < max_row_per_chall){
+					var row_2 = $('<tr></tr>');
+					var cell = $('<td class="cell_group">' + msg_group + '</td><td class="cell_score">' + msg_score + '</td>');
+					row_count_current_chall = row_count_current_chall + 1
+					row_2.append(cell);
+					table.append(row_2);
 				}
+			}
+			
+			//update challenges scores (assuming another team member scored).
+			//Notice that this also fixes non-updating initial score values when html renders
+			if (msg_group == group){
+				document.getElementById("lowscore_" + (current_chall_id)).innerHTML = msg_score;
 			}
 		}
 	}
-	
+
+
 	function feedback(msg){
 		output = msg['output'].replace(/(\r\n|\n|\r)/gm,"<br>");
 		document.getElementById('results_' + msg['c_id']).innerHTML = output;
