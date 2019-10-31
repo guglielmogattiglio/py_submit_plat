@@ -129,7 +129,7 @@ def process_script(json):
     ch = Challenges.query.filter_by(challenge_id=c_id).first()
     safe_dict = make_safe_dict(ch.allowed_functions, ch.required_modules)
     try:
-		script = validate_script(script)
+        script = validate_script(script)
         score = evaluate_script(script, safe_dict, ch.func_name, ch.solutions)
         output = f'Your new score is {score}'
     except Exception as e:
@@ -197,12 +197,11 @@ def evaluate_script(script, safe_dict, func_name, sol):
         try:
             ret_value = local[func_name](*test[0])
             if isinstance(test[1], float) or isinstance(ret_value, float):
-                    cond = abs(ret_value - test[1]) < 1e-5
-                else:
-                    cond = ret_value == test[1]
-                    
-                if cond:
-            if  cond:
+                cond = abs(ret_value - test[1]) < 1e-5
+            else:
+                cond = ret_value == test[1]
+                
+            if cond:
                 c += 1
         except KeyError:
             raise Exception('KeyError raised during execution. Check that your function is called %s.\nIf that is correct, it is something within your code, for example check that all dictionaries operations work as expected.'%func_name) from None
