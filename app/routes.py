@@ -82,7 +82,7 @@ def login():
 def challenge():
     group = Groups.query.filter_by(group_id=int(current_user.group_id)).first().group_name
     n_users = len(current_user.group.users)
-    challenges = Challenges.query.all()
+    challenges = Challenges.query.order_by('challenge_id').all()
     msg = []
     for c in challenges:
         msg.append(ast.literal_eval(c.specification))
@@ -103,18 +103,19 @@ def push_updates():
     group.users it will not work (doesn't update w.r.t. main thread)
     '''
     while True:
-        socketio.sleep(3) 
+        socketio.sleep(5) 
         if db_pymysql.check_users_connected(): #there are conn users
-            groups = db_pymysql.get_groups()
-            for group in groups: #need to update all groups...
-                n_users = db_pymysql.get_n_users(group['group_id'])
-                if n_users > 0:             #... but only if active
-                    socketio.emit('update_n_users', 
+            conn_users = db_pymysql.get_conn_users()
+            for group in conn_users: #need to update all groups...
+                n_users = group['n_users']
+                assert n_users > 0
+                socketio.emit('update_n_users', 
                           {'n_users': n_users}, room=group['group_name'])
-                    
-            #update leatherboard 
-            challenges = db_pymysql.get_ordered_challenge_id()
-            result = [[(group['group_name'], group['last_score']) for group in db_pymysql.get_top_3_groups(c['challenge_id'])] for c in challenges]
+                 
+            socketio.sleep(0) #let server handle other tasks as this may take a while   
+            
+            #update leatherboard
+            result = db_pymysql.get_all_results()
             socketio.emit('update_scoreboard', result, broadcast=True)
             
             

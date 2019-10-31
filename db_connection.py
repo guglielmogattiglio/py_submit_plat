@@ -31,12 +31,12 @@ def check_users_connected():
 def get_groups():
     conn = connect()
     cursor = conn.cursor()
-    sql = "select * from groups"
+    sql = "select group_id, group_name from groups"
     cursor.execute(sql)
     records = cursor.fetchall()
     if records is None:
         return None
-    result = [{'group_id': i[0], 'group_name': i[1], 'group_psw': i[2]} for i in records]
+    result = [{'group_id': i[0], 'group_name': i[1]} for i in records]
     return result
 
 def get_n_users(group_id):
@@ -71,21 +71,24 @@ def get_top_3_groups(challenge_id):
     result = [{'group_name': i[0], 'last_score': i[1]} for i in records]
     return result
 
-#def getNextTrains(line_id, station_id, direction=None):
-#    conn = connect()
-#    cursor = conn.cursor()
-#    if direction is None:
-#        sql = "SELECT * FROM trains WHERE line_id=%s and next_stat=%s"
-#        cursor.execute(sql, (line_id, station_id))
-#    else:
-#        sql = "SELECT * FROM trains WHERE line_id=%s and next_stat=%s and destination=%s"
-#        cursor.execute(sql, (line_id, station_id, direction))
-#    trains = cursor.fetchall()
-#    if trains is None:
-#        return None
-#    ordered_trains = []
-#    for i in trains:
-#        ordered_trains.append({"train_id" : i[0], "line_id": i[1],
-#            "destination": i[2], "next_stat": i[3], "from_stat": i[4]})
-#    conn.close()
-#    return ordered_trains
+def get_conn_users():
+    conn = connect()
+    cursor = conn.cursor()
+    sql = "select res.n_users, group_name from (select count(*) as n_users, group_id from users group by group_id having count(*) > 0) as res inner join groups on res.group_id=groups.group_id"
+    cursor.execute(sql)
+    records = cursor.fetchall()
+    if records is None:
+        return None
+    result = [{'n_users': i[0], 'group_name': i[1]} for i in records]
+    return result
+
+def get_all_results():
+    conn = connect()
+    cursor = conn.cursor()
+    sql = "select g.group_name, c.challenge_id, c.n_attempts, c.best_score, c.last_score from challenge_group as c inner join groups as g on c.group_id=g.group_id sort by c.challenge_id asc, c.last_score desc"
+    cursor.execute(sql)
+    records = cursor.fetchall()
+    if records is None:
+        return None
+    result = [{'group_name': i[0], 'challenge_id': i[1], 'n_attempts': i[2], 'best_score': i[3], 'last_score': i[4]} for i in records]
+    return result
