@@ -3,6 +3,11 @@
 A platform to conveniently run Python programming competitions.  
 Students divide in teams to solve programming exercises, upload their code to the platform which checks correctness and assigns it a score. May the best team win!
 
+Check out a live version at [http://81.30.3.98:4152/welcome](http://81.30.3.98:4152/welcome)!
+
+
+
+
 ### Init
 Clone the project first. Then open the terminal when you cloned to and do the following:
 * create a virtual environment `python3 -m venv venv`
