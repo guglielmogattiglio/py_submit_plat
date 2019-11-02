@@ -5,6 +5,9 @@
 {{ super() }}
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
 <style>
+
+/* CSS for DC */
+
 button{
     -webkit-appearance: button;
     cursor: pointer;
@@ -72,6 +75,7 @@ th {
 .cell_ch {
   background-color: #dddddd;
   padding-left: 6px;
+  border-color: #ccc;
 }
 
 .cell_group {
@@ -85,6 +89,27 @@ th {
 .nav_bar_top {
 	padding-right: 20px;
 }
+
+
+/* CSS for AC */
+
+.w3-border{border:1px solid #ccc!important}
+.w3-bar:before,.w3-bar:after{content:"";display:table;clear:both}
+.w3-bar{display:inline-block;width:auto}
+.w3-bar{width:100%;overflow:hidden}	
+.w3-round{border-radius:4px}
+.w3-bar-item{text-align:center}
+.w3-bar .w3-bar-item{padding:8px 16px;float:left;width:auto;border:none;display:block;outline:0}
+.w3-button{border:none;display:inline-block;padding:8px 16px;vertical-align:middle;overflow:hidden;text-decoration:none;color:inherit;background-color:inherit;text-align:center;cursor:pointer;white-space:nowrap}
+.w3-button{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none} 
+.w3-bar .w3-button{white-space:normal}
+.w3-button:hover{color:#000!important;background-color:#ccc!important}
+.w3-light-grey{color:#000!important;background-color:#f1f1f1!important}
+.w3-container:after,.w3-container:before{content:"";display:table;clear:both}
+.w3-container{padding:0.01em 16px}
+div#stats{padding-bottom: 40px;}
+div#nav_tabs{padding-bottom: 2px;}
+
 </style>
 {% endblock %}
 
@@ -92,32 +117,29 @@ th {
 {% block my_content %}
 
 	<div class="container">
-		<div class="row">
-			<!-- <div class="col-xs-1"></div> -->
-			<div class="col-xs-12">
-				<div class="row" id="top_row"> 
-					<div class="col-md-12">
-						<span class="nav_bar_top"> Group: {{ group }} </span>
-						<span >Users connected: </span><span id="n_users" class="nav_bar_top"> {{ n_users }} </span>
-						<a href='#' onclick="change_group()"> Change group </a>
-					</div>
-				</div>
-				
-				<br>
-				
-				<div class="row">
-					<div id="challenges" class="col-xs-10">
-						
+
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="row" id="top_row"> 
+						<div class="col-md-12">
+							<span class="nav_bar_top"> Group: {{ group }} </span>
+							<span >Users connected: </span><span id="n_users" class="nav_bar_top"> {{ n_users }} </span>
+							<a href='#' onclick="change_group()"> Change group </a>
+						</div>
 					</div>
 					
-					<div id="scoreboard" class="col-xs-2">
-						
+					<br>
+					
+					<div id="before_challenge">
 					</div>
+					<div id="during_challenge">
+					</div>
+					<div id="after_challenge">
+					</div>
+
+					
 				</div>
 			</div>
-			<!-- <div class="col-xs-1"></div> -->
-		</div>
-	</div>
 
 {% endblock %}
 
@@ -129,8 +151,82 @@ th {
 <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
 <script type="text/javascript" charset="utf-8">
     
+	// ****** global ******
+
+	var group = '{{ group }}';
+	var user_id = '{{ id }}';
 	
-	function create_content(data, root){
+	var socket = io();
+    
+	//main logic implementing spa
+    var app_status = "not-defined"; //BC, DC, AC
+    var tot_challenge_time = -1;
+    var chal_start_time = -1;
+
+
+	
+	
+    // ****** functions loading dynamic webpage *******
+
+    function load_before_challenge(data){
+		//should I check? when is the status set?
+    	if (app_status != "BC"){
+    		return "";
+    		console.log("error, not returning, BC");
+    	}
+		restore_init_html();
+    	data = pre_process_msg(data);
+		console.log('not implemented');
+
+    }
+
+    function load_during_challenge(data){
+    	app_status = "DC";
+		restore_init_html();
+    	data = pre_process_msg(data);
+
+    	create_init_content_DC();
+    	
+    	var root = $('#challenges');
+		
+		for (var i = 0; i < data.length; i++) {
+			var temp =  create_content_DC(data[i], root);
+			root.append(temp);
+		}
+		make_tips_hidden();
+    }
+
+    function load_after_challenge(){
+    	app_status = "AC";
+		restore_init_html();
+		create_init_content_AC();
+    }
+
+    // Event handler for incoming event - load webpage to display before challenge begins
+	socket.on('load_before_challenge', load_before_challenge);
+
+	// Event handler for incoming event - load webpage to display actual challenge, when triggered by master
+	socket.on('load_during_challenge', load_during_challenge);
+
+	// Event handler for incoming event - load webpage to display after challenge concluded, recap score and show winner
+	socket.on('load_after_challenge', load_after_challenge);
+
+
+	function create_init_content_DC(){
+
+		var root = $('#during_challenge');
+
+		var row_1 = $('<div class="row"></div>');
+		var col_1 = $('<div id="challenges" class="col-xs-10"></div>')
+		var col_2 = $('<div id="scoreboard" class="col-xs-2"></div>')
+
+		root.append(row_1);
+		row_1.append(col_1);
+		row_1.append(col_2);
+			
+	}
+	
+	function create_content_DC(data, root){
 		if(typeof root === 'undefined'){
 			root = $('body');
 		}
@@ -192,26 +288,34 @@ th {
 		return div;
 	}
 	
-	function load_page(msg) {
-		var root = $('#challenges');
+	function create_init_content_AC(){
+		var root = $('#after_challenge');
 		
-		for (var i = 0; i < msg.length; i++) {
-			var temp =  create_content(msg[i], root);
-			root.append(temp);
-		}
+		var div_1 = $('<div id="temp_result"></div>'); //will be emptied once results are available
+		var p = $('<p>Please wait while final results are being computed.</p>');
+		div_1.append(p);
+		
+		var row_1 = $('<div class="row"></div>');
+		var col_1 = $('<div class="col-xs-10"></div>')
+		var col_2 = $('<div class="col-xs-2"></div>')
+		var div_2 = $('<div id="stats"></div>');
+		var div_3 = $('<div id="nav_tabs"></div>');
+		var div_4 = $('<div id="scoreboard"></div>');
+		
+		row_1.append(col_1);
+		row_1.append(col_2);
+		col_1.append(div_2);
+		col_1.append(div_3);
+		col_1.append(div_4);
+		root.append(div_1);
+		root.append(row_1);
 	}
 	
-	function pre_process_msg(msg){
-		msg = JSON.stringify(msg);
-		msg = msg.replace(/(\r\n|\n|\r)/gm,"<br>");
-		return JSON.parse(msg);
-	}
-	msg = {{ msg|safe }};
-	msg = pre_process_msg(msg);
 	
-	load_page(msg, function() {});
+	
 
 
+	// ****** functions called by html components ******
 
 	function sendSolution(challenge_id){
 		var myText = document.getElementById("myTextArea_" + challenge_id).value;
@@ -222,12 +326,47 @@ th {
 		socket.emit('change_group', {});
 	}
 	
-	function update_n_users(msg){
-		document.getElementById("n_users").innerHTML = msg['n_users'];
+	function show_tip(c_id, tip_id){
+		//var tip_text = $('#tip_' + c_id + '_' + tip_id);
+		var tip_text = document.getElementById('tip_' + c_id + '_' + tip_id);
+		if (tip_text.style.display === "none") {
+			tip_text.style.display = "block";
+		} else {
+			tip_text.style.display = "none";
+		}
 	}
 	
+	function show_chall(c_id){
+		var i;
+		var x = document.getElementsByClassName("tab_ch");
+		for (i = 0; i < x.length; i++) {
+			x[i].style.display = "none";  
+		}
+		document.getElementById('tab_ch_' + c_id).style.display = "block";
+	}
+
+
+	// ***** functions called by server events ******
 	
-	function update_scoreboard(msg){
+	// updates scoreboard
+	socket.on('update_scoreboard', function (msg)
+	{
+		if (app_status == "BC"){
+    		return "";
+    		console.log("error, not returning, update_scoreboard");
+    	}
+		
+		if (app_status == "DC"){
+    		update_scoreboard_DC(msg);
+		}
+		
+		if (app_status == "AC"){
+    		update_scoreboard_AC(msg);
+    	}
+	});	
+
+	
+	function update_scoreboard_DC(msg){
     	var max_row_per_chall = 3;
 
 		var root = $('#scoreboard');
@@ -241,6 +380,7 @@ th {
 		//create scoreboard
 		var prev_chall_id = "";
 		var row_count_current_chall = 0;
+		var chall_counter = 0;
 		for (var i = 0; i < msg.length; i++) {
 			var msg_group = msg[i]['group_name'];
 			var msg_score = msg[i]['last_score'];
@@ -248,7 +388,7 @@ th {
 			
 			if (prev_chall_id != current_chall_id){
 				var row_1 = $('<tr></tr>');
-				var ch = $('<td colspan="2" class="cell_ch">Challenge ' + (i + 1) + '</td>');
+				var ch = $('<td colspan="2" class="cell_ch">Challenge ' + (chall_counter + 1) + '</td>');
 				var row_2 = $('<tr></tr>');
 				var cell = $('<td class="cell_group">' + msg_group + '</td><td class="cell_score">' + msg_score + '</td>');
 				prev_chall_id = current_chall_id;
@@ -257,7 +397,7 @@ th {
 				table.append(row_1);
 				row_2.append(cell);
 				table.append(row_2);
-				
+				chall_counter += 1;
 			} else {
 				if (row_count_current_chall < max_row_per_chall){
 					var row_2 = $('<tr></tr>');
@@ -275,54 +415,154 @@ th {
 			}
 		}
 	}
+	
+	
+	function update_scoreboard_AC(msg){
+		var scoreboard = $('#scoreboard');
+		var nav_tabs = $('#nav_tabs');
+		var temp_result = $('#temp_result');
+		temp_result.empty();
+		
+		//if there is already content, don't update (otherwise can't browse navig tabs for ex)
+		//could also disconnect client after loading data, but prefer this way so that can
+		//still restart challenge if needed
+		if (!scoreboard.is(':empty')){return}
+		
+		var nav_container = $('<div class="w3-bar w3-border w3-round w3-light-grey"></div>');
+		nav_tabs.append(nav_container);
 
-
-	function feedback(msg){
+		//create scoreboard and navigation tabs
+		var prev_chall_id = "";
+		var table = "";
+		var chall_counter = 0; //need this because challenge_id not forced to be contiguous numbers from 1
+		for (var i = 0; i < msg.length; i++) {
+			var msg_group = msg[i]['group_name'];
+			var msg_score = msg[i]['last_score'];
+			var current_chall_id = msg[i]['challenge_id'];
+			
+			if (prev_chall_id != current_chall_id){
+				//build nav tab
+				var button = $('<button class="w3-bar-item w3-button w3-border-right" onclick="show_chall(' + current_chall_id + ')">Challenge ' + (chall_counter + 1) + '</button>');
+				nav_container.append(button);
+				
+				//need to show first challenge results
+				if (prev_chall_id == ""){
+					var div = $('<div id="tab_ch_' + current_chall_id + '" class="w3-container tab_ch"></div>');
+				} else {
+					var div = $('<div id="tab_ch_' + current_chall_id + '" class="w3-container tab_ch" style="display:none"></div>');
+				}
+				
+				//build table header
+				table = $('<table id="tb_scores"> </table>');
+				var header = $('<tr><td class="cell_ch">Group Name</td><td class="cell_ch">Score</td><td class="cell_ch">Number of Submissions</td></tr>');
+				var row = $('<tr><td class="cell_group">' + msg_group + '</td><td class="cell_group">' + msg_score + '</td><td class="cell_group">' + msg[i]['n_attempts'] + '</td></tr>');
+				scoreboard.append(div);
+				div.append(table);
+				table.append(header);
+				table.append(row);
+				prev_chall_id = current_chall_id;
+				chall_counter += 1;
+			} else {
+				var row = $('<tr><td class="cell_group">' + msg_group + '</td><td class="cell_group">' + msg_score + '</td><td class="cell_group">' + msg[i]['n_attempts'] + '</td></tr>');
+				table.append(row);
+			}
+			
+		}
+		
+		//create stats overall
+		var stats = $('#stats');
+		stats.empty();
+		
+		//group by group_id, sum(last_score)
+		var group_scores = {};
+		for (var i in msg){
+			group = msg[i]['group_name'];
+			group_scores[group] = get(group_scores, group, 0) + msg[i]['last_score'];
+		}
+		
+		//retrieve groups with same score
+		var ranking = {};
+		for (var group in group_scores){
+			current_val = get(ranking, group_scores[group], []);
+			current_val.push(group);
+			ranking[group_scores[group]] = current_val;
+		}
+		
+		//sort by highest score and show output
+		var c = 1;
+		var table_title = $('<tr><th colspan="3">Final Ranking:</th></tr>');
+		var table = $('<table> </table>');
+		var header = $('<tr><td class="cell_ch">Position</td><td class="cell_ch">Group Name(s)</td><td class="cell_ch">Overall Score</td></tr>');
+		stats.append(table_title);
+		stats.append(table);
+		table.append(header);
+		var keys = Object.keys(ranking).map(function(x) {return parseInt(x)});
+		var sorted_keys = keys.sort(function(a, b){return b - a});
+		for (var i in sorted_keys){
+			key = sorted_keys[i]
+			var row = $('<tr><td class="cell_group">' + c + '</td><td class="cell_group">' + ranking[key].join(', ') + '</td><td class="cell_group">' + key + '</td></tr>');
+			table.append(row);
+			c += 1;
+		}
+	}
+	
+	// updates score and displays output
+	socket.on('feedback', function (msg)
+	{
 		output = msg['output'].replace(/(\r\n|\n|\r)/gm,"<br>");
 		document.getElementById('results_' + msg['c_id']).innerHTML = output;
 		//$('#results_' + msg['c_id']).text = msg['output'];
 		document.getElementById("lowscore_" + msg['c_id']).innerHTML = msg['score'];
-	}
-	
-	var group = '{{ group }}';
-	var user_id = '{{ id }}';
-	
-	var socket = io();
-	
-	socket.emit('join', {'group': group});
-	
+	});
+
 	// Event handler for incoming data - updates number conn users
-	socket.on('update_n_users', update_n_users);
-	
-	// Event handler for incoming data - updates scoreboard
-	socket.on('update_scoreboard', update_scoreboard);
-	
-	// Event handler for incoming data - updates score and displays output
-	socket.on('feedback', feedback);
-	
-	socket.on('redirect', my_redirect);
-	
-	function my_redirect(data){
+	socket.on('update_n_users', function (msg)
+	{
+		document.getElementById("n_users").innerHTML = msg['n_users'];
+	});
+
+	socket.on('redirect', function (data)
+	{
 		window.location = '{{ redirect }}';
+	});
+
+
+
+	// ****** helper functions ******
+
+	function pre_process_msg(msg){
+		msg = JSON.stringify(msg);
+		msg = msg.replace(/(\r\n|\n|\r)/gm,"<br>");
+		return JSON.parse(msg);
 	}
-	
-	function show_tip(c_id, tip_id){
-		//var tip_text = $('#tip_' + c_id + '_' + tip_id);
-		var tip_text = document.getElementById('tip_' + c_id + '_' + tip_id);
-		if (tip_text.style.display === "none") {
-			tip_text.style.display = "block";
-		} else {
-			tip_text.style.display = "none";
-		}
-	}
-	
+
 	function make_tips_hidden(){
 		var tip_texts = document.getElementsByClassName('tips_text');
 		for (var i = 0; i < tip_texts.length; i++) {
 			tip_texts[i].style.display = "none";
 		}
 	}
-	make_tips_hidden();
+
+	function restore_init_html(){
+		$('#before_challenge').empty();
+		$('#during_challenge').empty();
+		$('#after_challenge').empty();
+	}
+	
+	function get(obj, key, def) {
+		if (key in obj) {
+			return obj[key];
+		} else {
+			return def;
+		}
+    }
+	
+	
+	// ****** send events to server ******
+
+	socket.emit('join', {'group': group});
+	
+	
 	
 </script>
 <!-- <script src="{{ url_for('static', filename='carriages.js') }}"></script> -->

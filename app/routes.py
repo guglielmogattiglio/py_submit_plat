@@ -16,6 +16,7 @@ import func_timeout
 
 thread = None
 thread_lock = threading.Lock()
+challenge_status = 'DC' #DC= challenge is happening AC=finished, show recap
 
 
 @flask_app.route('/')
@@ -80,28 +81,34 @@ def login():
 @flask_app.route('/challenge')
 @login_required
 def challenge():
+    #check if client wants to connect as master
+    master_pass = request.args.getlist('master_pass')
+    if len(master_pass) != 0 and master_pass[0] == 'guglielmo':
+        return render_template('challenge_master.html')
+        
     group = Groups.query.filter_by(group_id=int(current_user.group_id)).first().group_name
     n_users = len(current_user.group.users)
-    challenges = Challenges.query.order_by('challenge_id').all()
-    msg = []
-    for c in challenges:
-        msg.append(ast.literal_eval(c.specification))
-    return render_template('challenge.html', group=group, n_users=n_users, msg=msg, redirect=url_for('welcome'), id=current_user.get_id())
+    return render_template('challenge.html', group=group, n_users=n_users, redirect=url_for('welcome'), id=current_user.get_id())
 
 
 @socketio.on('connect')
 def on_connect():
-    global thread
+    global thread, challenge_status
     with thread_lock:
         if thread is None:
             thread = socketio.start_background_task(push_updates)
             
+    if challenge_status == 'DC':
+        challenges = Challenges.query.order_by('challenge_id').all()
+        msg = []
+        for c in challenges:
+            msg.append(ast.literal_eval(c.specification))
+        emit('load_during_challenge', msg)
+    elif challenge_status == 'AC':
+        emit('load_after_challenge')
+            
 
 def push_updates(): 
-    '''
-    Be VERY VERY careful in thread because if you use sqlalchemy relationship shortcuts like 
-    group.users it will not work (doesn't update w.r.t. main thread)
-    '''
     while True:
         socketio.sleep(5) 
         if db_pymysql.check_users_connected(): #there are conn users
@@ -119,6 +126,27 @@ def push_updates():
             socketio.emit('update_scoreboard', result, broadcast=True)
             
             
+######## Master Events #############
+
+
+@socketio.on('end_challenge')
+def end_challenge():
+    global challenge_status
+    challenge_status = 'AC'
+    socketio.emit('load_after_challenge', broadcast=True)
+    
+@socketio.on('restart_challenge')
+def restart_challenge():
+    global challenge_status
+    challenge_status = 'DC'
+    challenges = Challenges.query.order_by('challenge_id').all()
+    msg = []
+    for c in challenges:
+        msg.append(ast.literal_eval(c.specification))
+    socketio.emit('load_during_challenge', msg, broadcast=True)
+
+    
+######## Slave Events ##############
 
 @socketio.on('process_script')
 def process_script(json): 

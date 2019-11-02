@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+
+{% block styles %}
+{{ super() }}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+<style>
+button{
+    -webkit-appearance: button;
+    cursor: pointer;
+
+
+    background-color: #fff;
+    border-color: #ccc;
+
+    display: inline-block;
+    padding: 2	px 12px;
+    margin: 4px 2px;
+    font-size: 12px;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+
+	-webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+}
+
+button:hover {
+	border-color: #adadad;
+	background-color:: #e6e6e6;
+	background-color:: black;
+}
+
+</style>
+{% endblock %}
+
+
+{% block my_content %}
+
+	<div class="container">
+		<div class="row"> 
+			<div class="col-md-8">
+				<p> End challenge: prevents users from uploading new code, clears current html 
+				and creates new one showing a recap of the challenges, for both them and the other teams.
+				Note that the clients are not disconnected from the websocket.</p>
+				<p>Restart challenge: returns the clients to the challenges page, where they can continue
+				to upload code and behave as before. Of little practical use, can be done to revert an end challenge
+				command in case pressed by mistake or if more time is asked/needed.</p>
+				<button onclick="end_challenge()">End challenge</button>
+				<button onclick="restart_challenge()">Restart challenge</button>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    
+	
+	var socket = io();
+	
+	function end_challenge(){
+		socket.emit('end_challenge');
+	}
+	
+	function restart_challenge(){
+		socket.emit('restart_challenge');
+	}
+</script>
+{% endblock %}
+
