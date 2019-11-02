@@ -16,13 +16,14 @@ By default the webserver is accessible at http://127.0.0.1:5000, this is handy b
 
 ### How It Works
 
-After cloning the project, you need to edit `/source/challenges.py` and `/source/solutions.py`, the former contains the text and related information of each challenge. The second includes the solutions (test cases) used to check the uploaded script: the rationale is that usually just one test is not sufficient to asses the correctness of the provided script (corner cases). The bulk of the information regarding the platform's functioning is detailed in `/app/templates/welcome.html`, which is served at `/welcome` if one visits the webapp. Here we summarize the main **features**:
+After cloning the project, you need to edit `/source/challenges.py` and `/source/solutions.py`, the former contains the text and related information of each challenge. The second includes the solutions (test cases) used to check the uploaded script: the rationale is that usually just one test is not sufficient to asses the correctness of the provided script (corner cases). The bulk of the information regarding the platform's functioning is detailed in `/app/templates/welcome.html`, which is served at `/welcome` if one visits the webapp. To control the challenge, one can visit the URL `/challenge?master_pass=guglielmo` after logging in. Here we summarize the main **features**:
 * tracking registration/login of users as members of teams
 * data updated in real-time within teams, for instance if a team member submits some code all the other members see the new score 
 * real-time scoreboard showing top three teams for each challenge
 * possibility to prevent access to Python functions and modules (default setting)
 * automated system for submitted code evaluation 
 * possibility to set max running time for each test case (default 1 sec)
+* ability to (forcefully) end challenge and show final results/ranking (can be undone)
 
 ### Security Considerations
 Due to the nature of the project, which is that to execute and test arbitrary Python code, numerous security issues are raised. The principal one is without doubt the use of `exec()`. The first step is that of preventing access to builtins, by passing `{'__builtins__':None}` as globals. Unfortunately that is not enough (as detailed [here](https://nedbatchelder.com/blog/201206/eval_really_is_dangerous.html)), so to address this new issue, the platform won't run any code containing '__', which basically is explicitly revoking access to Python internal constructs. It is just a slight limitation, as in most of the cases these are not needed especially in the scope of a challenge. That should be enough. 
