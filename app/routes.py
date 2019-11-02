@@ -5,6 +5,7 @@ from app.models import Groups, Users, Challenges, ChallengeGroup, Submissions
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_socketio import emit, join_room, leave_room, disconnect
 import db_connection as db_pymysql
+from config import Config
 
 import threading
 import traceback
@@ -83,7 +84,7 @@ def login():
 def challenge():
     #check if client wants to connect as master
     master_pass = request.args.getlist('master_pass')
-    if len(master_pass) != 0 and master_pass[0] == 'guglielmo':
+    if len(master_pass) != 0 and master_pass[0] == Config.MASTER_PASS:
         return render_template('challenge_master.html')
         
     group = Groups.query.filter_by(group_id=int(current_user.group_id)).first().group_name
@@ -241,7 +242,7 @@ def evaluate_script(script, safe_dict, func_name, sol):
         for test in sol:
             socketio.sleep(0)
             try:
-                ret_value = func_timeout.func_timeout(1, local[func_name], args=test[0])
+                ret_value = func_timeout.func_timeout(Config.TEST_CASE_TIMEOUT, local[func_name], args=test[0])
                 if isinstance(test[1], float) or isinstance(ret_value, float):
                     cond = abs(ret_value - test[1]) < 1e-5
                 else:

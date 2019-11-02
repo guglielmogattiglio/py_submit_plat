@@ -15,3 +15,9 @@ class Config(object):
                           'host': os.environ.get('host'), 
                           'port': int(os.environ.get('port')),
                           'database': os.environ.get('database')}
+    
+    #password to access master version of challenge (aka controller)
+    MASTER_PASS = os.environ.get('MASTER_PASS') or 'guglielmo'
+    
+    #either float or int, time is in seconds, float is fraction of second
+    TEST_CASE_TIMEOUT = os.environ.get('TEST_CASE_TIMEOUT') or 1
