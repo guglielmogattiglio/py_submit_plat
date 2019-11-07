@@ -243,7 +243,7 @@ def evaluate_script(script, safe_dict, func_name, sol):
         for test in sol:
             socketio.sleep(0)
             try:
-                ret_value = func_timeout.func_timeout(Config.TEST_CASE_TIMEOUT, local[func_name], args=test[0])
+                ret_value = func_timeout.func_timeout(float(Config.TEST_CASE_TIMEOUT), local[func_name], args=test[0])
                 if isinstance(test[1], float) or isinstance(ret_value, float):
                     cond = abs(ret_value - test[1]) < 1e-5
                 else:
@@ -273,7 +273,6 @@ def wrap_script(script, func_name):
     script = script.split('\n')
     script = "\n    ".join(script)
     script = f'def {func_name}(*input):\n    {script}\n    return {func_name}(*input)'
-    print(script)
     return script
 
 @socketio.on('change_group')
