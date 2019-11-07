@@ -228,6 +228,7 @@ def evaluate_script(script, safe_dict, func_name, sol):
     no_builtins_dic = {"__builtins__" : None}
     safe_dict.update(no_builtins_dic) #keys already existing will be overwritten
     local = {}
+    script = wrap_script(script, func_name)
     
     comp_code = compile(script, '<string>', 'exec')
     exec(comp_code, safe_dict, local)
@@ -267,6 +268,13 @@ def evaluate_script(script, safe_dict, func_name, sol):
     except:
         raise
         
+#need to wrap original source code into function otherwise other objects are not seen
+def wrap_script(script, func_name):
+    script = script.split('\n')
+    script = "\n    ".join(script)
+    script = f'def {func_name}(*input):\n    {script}\n    return {func_name}(*input)'
+    print(script)
+    return script
 
 @socketio.on('change_group')
 def return_home(msg):
