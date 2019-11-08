@@ -240,7 +240,7 @@ div#nav_tabs{padding-bottom: 2px;}
 		var div = $('<div id="c_title_' + c_id + '"></div>');
 		var row_1 = $('<div class="row"></div>');
 		var col_1 = $('<div class="col"></div>');
-		var title = $('<h3>' + title + '</h3>');
+		var title = $('<h3>' + c_id + '. ' + title + '</h3>');
 		
 
 		col_1.append(title);
@@ -380,7 +380,6 @@ div#nav_tabs{padding-bottom: 2px;}
 		//create scoreboard
 		var prev_chall_id = "";
 		var row_count_current_chall = 0;
-		var chall_counter = 0;
 		for (var i = 0; i < msg.length; i++) {
 			var msg_group = msg[i]['group_name'];
 			var msg_score = msg[i]['last_score'];
@@ -388,7 +387,7 @@ div#nav_tabs{padding-bottom: 2px;}
 			
 			if (prev_chall_id != current_chall_id){
 				var row_1 = $('<tr></tr>');
-				var ch = $('<td colspan="2" class="cell_ch">Challenge ' + (chall_counter + 1) + '</td>');
+				var ch = $('<td colspan="2" class="cell_ch">Challenge ' + current_chall_id + '</td>');
 				var row_2 = $('<tr></tr>');
 				var cell = $('<td class="cell_group">' + msg_group + '</td><td class="cell_score">' + msg_score + '</td>');
 				prev_chall_id = current_chall_id;
@@ -397,7 +396,6 @@ div#nav_tabs{padding-bottom: 2px;}
 				table.append(row_1);
 				row_2.append(cell);
 				table.append(row_2);
-				chall_counter += 1;
 			} else {
 				if (row_count_current_chall < max_row_per_chall){
 					var row_2 = $('<tr></tr>');
@@ -434,7 +432,6 @@ div#nav_tabs{padding-bottom: 2px;}
 		//create scoreboard and navigation tabs
 		var prev_chall_id = "";
 		var table = "";
-		var chall_counter = 0; //need this because challenge_id not forced to be contiguous numbers from 1
 		for (var i = 0; i < msg.length; i++) {
 			var msg_group = msg[i]['group_name'];
 			var msg_score = msg[i]['last_score'];
@@ -442,7 +439,7 @@ div#nav_tabs{padding-bottom: 2px;}
 			
 			if (prev_chall_id != current_chall_id){
 				//build nav tab
-				var button = $('<button class="w3-bar-item w3-button w3-border-right" onclick="show_chall(' + current_chall_id + ')">Challenge ' + (chall_counter + 1) + '</button>');
+				var button = $('<button class="w3-bar-item w3-button w3-border-right" onclick="show_chall(' + current_chall_id + ')">Challenge ' + current_chall_id + '</button>');
 				nav_container.append(button);
 				
 				//need to show first challenge results
@@ -461,7 +458,6 @@ div#nav_tabs{padding-bottom: 2px;}
 				table.append(header);
 				table.append(row);
 				prev_chall_id = current_chall_id;
-				chall_counter += 1;
 			} else {
 				var row = $('<tr><td class="cell_group">' + msg_group + '</td><td class="cell_group">' + msg_score + '</td><td class="cell_group">' + msg[i]['n_attempts'] + '</td></tr>');
 				table.append(row);
