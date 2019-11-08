@@ -290,20 +290,20 @@ Turn    flowerbed
 
 my_challenges = [{'id': 1, 'title': 'Robot Position', 'text': ch1_text, 'func_name': 'dist', 'max_score': 5, 'tips':
                     ['Remember that in order that the formula of the euclidean distance is the square root of the squared movement along the x and the squared movement along the y'],
-                  'allowed_functions': ['range'],
+                  'allowed_functions': ['range', 'len', 'max', 'min', 'abs', 'bool', 'dict', 'list', 'str', 'int', 'float', 'set', 'round'],
                   'required_modules': []},
                   {'id': 2, 'title': 'La La Land..? Py Py Python!', 'text': ch2_text, 'func_name': 'py_py_python', 'max_score': 5, 'tips': [],
-                  'allowed_functions': [],
+                  'allowed_functions': ['range', 'len', 'max', 'min', 'abs', 'bool', 'dict', 'list', 'str', 'int', 'float', 'set', 'round'],
                   'required_modules': []},
                  {'id': 3, 'title': 'Rangoli', 'text': ch3_text, 'func_name': 'rangoli', 'max_score': 5, 'tips':
                      ['Start creating only the top right of the piece of art',
                       'Remember that a string multiplied by an integer results in a new string repeated n times',
                       'Look which one is the special character for a new line'],
-                  'allowed_functions': ['range'],
+                  'allowed_functions': ['range', 'len', 'max', 'min', 'abs', 'bool', 'dict', 'list', 'str', 'int', 'float', 'set', 'round'],
                    'required_modules': []},
-                 {'id': 4, 'title': 'Good Good Robot', 'text': ch4_text, 'func_name': 'prizes', 'max_score': 1, 'tips': ['A brute force approach will take forever to run, you need to exploit recursion', "Notice that you don't have to compute all possible case explicitly, if a very long sequence starts with LL, then you can cut all the possible combinations that would follow (aka pruning the tree)", 'Even if you computed the minimum possible of this sequences, that will still not be enough, you need to cache some operations (if you analyze intermediate steps you will recognize that some are just repeated'], 'allowed_functions': [], 'required_modules': []},
+                 {'id': 4, 'title': 'Good Good Robot', 'text': ch4_text, 'func_name': 'prizes', 'max_score': 1, 'tips': ['A brute force approach will take forever to run, you need to exploit recursion', "Notice that you don't have to compute all possible case explicitly, if a very long sequence starts with LL, then you can cut all the possible combinations that would follow (aka pruning the tree)", 'Even if you computed the minimum possible of this sequences, that will still not be enough, you need to cache some operations (if you analyze intermediate steps you will recognize that some are just repeated'], 'allowed_functions': ['range', 'len', 'max', 'min', 'abs', 'bool', 'dict', 'list', 'str', 'int', 'float', 'set', 'round'], 'required_modules': []},
                  {'id': 5, 'title': 'Darts Championship', 'text': ch5_text, 'func_name': 'combinations', 'max_score': 1, 'tips': ['You may find useful to "write down" all possible dart combination/score...'],
-                  'allowed_functions': [], 'required_modules': []},
+                  'allowed_functions': ['range', 'len', 'max', 'min', 'abs', 'bool', 'dict', 'list', 'str', 'int', 'float', 'set', 'round'], 'required_modules': []},
                  {'id': 6, 'title': 'Robot Gardener', 'text': ch6_text, 'func_name': 'water_vacation', 'max_score': 14,
 				 'tips': 
 					['Plants will never receive more than 9 units of water because, at most, all the 8 neighbors will water it plus one unit for itself. Check for this with an assert, you can prevent bugs',
