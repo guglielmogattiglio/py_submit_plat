@@ -122,7 +122,7 @@ LAOO LAOA LAAO
 </pre>
 </p>
 <p>
-How many "prize" strings exist over a 30-day period? Write a function called <i>prizes</i> that computes the desired number.
+How many "prize" strings exist over a 30-day period? Write a function called <i>prizes</i> that computes the desired number (hint: in this exercise you are likely to get "Timed out").
 </p>
 '''
 
