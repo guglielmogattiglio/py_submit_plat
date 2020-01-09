@@ -67,8 +67,11 @@ def login():
     if form.validate_on_submit():
         #check credentials
         group = Groups.query.filter_by(group_name=form.group_name.data).first()
-        if group is None or group.group_psw != form.group_psw.data:
-            flash('Invalid group name or password.')
+        if group is None:
+            flash("The group name doesn't exists.")
+            return redirect(url_for('login'))
+        elif group.group_psw != form.group_psw.data:
+            flash('Wrong password for given user name.')
             return redirect(url_for('login'))
         else:
             #login user
