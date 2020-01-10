@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, EqualTo, ValidationError
+from wtforms.validators import DataRequired, EqualTo, ValidationError, Regexp
 from app.models import Groups
 
 
@@ -9,8 +9,11 @@ class WelcomeForm(FlaskForm):
     join = SubmitField('join group')
     
 class SignupForm(FlaskForm):
-    group_name = StringField('Group name', validators=[DataRequired()])
-    group_psw = PasswordField('Group password', validators=[DataRequired(), EqualTo('confirm', message='The passwords must match')])
+    regex = Regexp(r"^[-a-zA-Z0-9\s_]+$", message='Only letters, numbers, whitespaces, dashes and underscores allowed.')
+    group_name = StringField('Group name', validators=[DataRequired(), regex])
+    group_psw = PasswordField('Group password', validators=[DataRequired(),
+                                                            EqualTo('confirm', message='The passwords must match'),
+                                                            regex])
     confirm = PasswordField('Repeat password')
     create = SubmitField('Create and join group')
     
