@@ -188,9 +188,14 @@ div#nav_tabs{padding-bottom: 2px;}
     	create_init_content_DC();
     	
     	var root = $('#challenges');
-		
-		for (var i = 0; i < data.length; i++) {
-			var temp =  create_content_DC(data[i], root);
+        
+    	if (data[0]['visible'] == true){
+    	    var temp = create_intro_DC(data[0]);
+    	    root.append(temp);
+        }
+
+		for (var i = 1; i < data.length; i++) {
+			var temp =  create_content_DC(data[i]);
 			root.append(temp);
 		}
 		make_tips_hidden();
@@ -225,11 +230,39 @@ div#nav_tabs{padding-bottom: 2px;}
 		row_1.append(col_2);
 			
 	}
+
+	function create_intro_DC(data){
+	    var c_id = data['id'];
+		var title = data['title'];
+		var text = data['text'];
+
+		var div = $('<div id="c_title_' + c_id + '"></div>');
+		var row_1 = $('<div class="row"></div>');
+		var col_1 = $('<div class="col"></div>');
+		var title = $('<h3>' + title + '</h3>');
+
+
+		col_1.append(title);
+		row_1.append(col_1);
+		div.append(row_1);
+
+		var div_2 = $('<div id="c_' + c_id + '"></div>');
+
+		var row_2 = $('<div class="row"></div>');
+		var col_2 = $('<div class="col-md-9"></div>');
+		var text = $('<span class="my_text">' + text + '</span>');
+		var col_3 = $('<div class="col-md-3"></div>');
+
+		col_2.append(text);
+		row_2.append(col_2);
+		row_2.append(col_3);
+		div_2.append(row_2);
+		div.append(div_2);
+
+		return div;
+    }
 	
-	function create_content_DC(data, root){
-		if(typeof root === 'undefined'){
-			root = $('body');
-		}
+	function create_content_DC(data){
 		
 		var c_id = data['id'];
 		var title = data['title'];

@@ -288,7 +288,12 @@ Turn    flowerbed
 </pre>
 '''
 
-my_challenges = [{'id': 1, 'title': 'Robot Position', 'text': ch1_text, 'func_name': 'dist', 'max_score': 5, 'tips':
+intro_text = '''
+Summarize here your intro
+'''
+
+my_challenges = [{'id': 0, 'title':'Intro', 'text': intro_text, 'allowed_functions': [], 'required_modules': [], 'visible': False},
+                 {'id': 1, 'title': 'Robot Position', 'text': ch1_text, 'func_name': 'dist', 'max_score': 5, 'tips':
                     ['Remember that in order that the formula of the euclidean distance is the square root of the squared movement along the x and the squared movement along the y'],
                   'allowed_functions': ['range', 'len', 'max', 'min', 'abs', 'bool', 'dict', 'list', 'str', 'int', 'float', 'set', 'round'],
                   'required_modules': []},

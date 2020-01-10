@@ -51,7 +51,6 @@ def evaluate_script(script, safe_dict, func_name, sol, sleep, timeout):
     safe_dict.update(no_builtins_dic)  # keys already existing will be overwritten
     local = {}
     script = wrap_script(script, func_name)
-    logging.warning(script)
 
     try:
         comp_code = compile(script, '<string>', 'exec')
