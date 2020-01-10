@@ -2,19 +2,30 @@
 allowed_functions: can put both built-in and from modules, though make sure to also add the module to required_modules. For both of them you need to add them to a list.
 '''
 
+intro_text = '''
+<b>Read the instructions</b>
+<br><br>
+<b>Read the instructions</b>
+<br><br>
+<p>
+Seriously, <b>read the instructions</b> (go back to the home page, just click on change group). If you don't, you will not understand how things work around here, especially you will have an hard time debugging your code.
+</p>
+<p>
+The following funcions will be allowed throughout the challenge, unless otherwise instructed by the specific exercise: <i>len</i>, <i>range</i>, <i>max</i>, <i>min</i>, <i>abs</i>, <i>round</i>, <i>sum</i>, <i>built-in types constructors</i> (like int, str, etc), and <i>user created functions</i>. No external module is available. Note that calling a function not listed among one of the above will raise a NoneType exception (read instructions), however you can call your own functions.
+</p>
+'''
+
 ch1_text = '''
 <blockquote>
 Hello there! Thank you for acquiring your first robot from us, we are sure it is going to be a <i>very</i> particular experience for you. If you are scared of apocalyptic scenarios where the robots rise and subdue humans, you don't have to worry, because our robots are premium products thoroughly tested with our highest standards.
 </blockquote>
+<br>
 <p>
 Our robot received some damage to its GPS system, now he continuously gets lost!! Will you be able to help him? 
 Our robot can move among the 4 directions:  NORTH, SOUTH, WEST and EAST. When he receives the indications he perfectly executes them, only that once he executed them he doesn’t know the distance from his starting position. 
 </p>
 <p> You  have  to  create  a  function  named <i>dist</i> that  accepts  as  argument  a  list. The  list  contains 4 integers.  The first integers represents the total number of steps towards north, the second towards south, the third towards west and the fourth towards east.
 The function should output the distance from the starting position.
-</p>
-<p>
-The following funcions will be allowed throughout the challenge, unless otherwise instructed by the specific exercise: len, range, max, min, abs, round, sum, built-in types constructors (like int, str, etc), and user created functions. No external module is available. The previous definNote that calling a function not listed among one of the above will raise a NoneType exception (read instructions), however you can call your own functions.
 </p>
 <p>
 Example:
@@ -288,27 +299,25 @@ Turn    flowerbed
 </pre>
 '''
 
-intro_text = '''
-Summarize here your intro
-'''
-
-my_challenges = [{'id': 0, 'title':'Intro', 'text': intro_text, 'allowed_functions': [], 'required_modules': [], 'visible': False},
+my_challenges = [{'id': 0, 'title':'Intro', 'text': intro_text,
+                  'allowed_functions': ['range', 'len', 'max', 'min', 'abs', 'bool', 'dict', 'list', 'str', 'int', 'float', 'set', 'round'],
+                  'required_modules': [], 'visible': True},
                  {'id': 1, 'title': 'Robot Position', 'text': ch1_text, 'func_name': 'dist', 'max_score': 5, 'tips':
                     ['Remember that in order that the formula of the euclidean distance is the square root of the squared movement along the x and the squared movement along the y'],
-                  'allowed_functions': ['range', 'len', 'max', 'min', 'abs', 'bool', 'dict', 'list', 'str', 'int', 'float', 'set', 'round'],
+                  'allowed_functions': [],
                   'required_modules': []},
                   {'id': 2, 'title': 'La La Land..? Py Py Python!', 'text': ch2_text, 'func_name': 'py_py_python', 'max_score': 5, 'tips': [],
-                  'allowed_functions': ['range', 'len', 'max', 'min', 'abs', 'bool', 'dict', 'list', 'str', 'int', 'float', 'set', 'round'],
+                  'allowed_functions': [],
                   'required_modules': []},
                  {'id': 3, 'title': 'Rangoli', 'text': ch3_text, 'func_name': 'rangoli', 'max_score': 5, 'tips':
                      ['Start creating only the top right of the piece of art',
                       'Remember that a string multiplied by an integer results in a new string repeated n times',
                       'Look which one is the special character for a new line'],
-                  'allowed_functions': ['range', 'len', 'max', 'min', 'abs', 'bool', 'dict', 'list', 'str', 'int', 'float', 'set', 'round'],
+                  'allowed_functions': [],
                    'required_modules': []},
-                 {'id': 4, 'title': 'Good Good Robot', 'text': ch4_text, 'func_name': 'prizes', 'max_score': 1, 'tips': ['A brute force approach will take forever to run, you need to exploit recursion', "Notice that you don't have to compute all possible case explicitly, if a very long sequence starts with LL, then you can cut all the possible combinations that would follow (aka pruning the tree)", 'Even if you computed the minimum possible of this sequences, that will still not be enough, you need to cache some operations (if you analyze intermediate steps you will recognize that some are just repeated'], 'allowed_functions': ['range', 'len', 'max', 'min', 'abs', 'bool', 'dict', 'list', 'str', 'int', 'float', 'set', 'round'], 'required_modules': []},
+                 {'id': 4, 'title': 'Good Good Robot', 'text': ch4_text, 'func_name': 'prizes', 'max_score': 1, 'tips': ['A brute force approach will take forever to run, you need to exploit recursion', "Notice that you don't have to compute all possible case explicitly, if a very long sequence starts with LL, then you can cut all the possible combinations that would follow (aka pruning the tree)", 'Even if you computed the minimum possible of this sequences, that will still not be enough, you need to cache some operations (if you analyze intermediate steps you will recognize that some are just repeated'], 'allowed_functions': [], 'required_modules': []},
                  {'id': 5, 'title': 'Darts Championship', 'text': ch5_text, 'func_name': 'combinations', 'max_score': 1, 'tips': ['You may find useful to "write down" all possible dart combination/score...'],
-                  'allowed_functions': ['range', 'len', 'max', 'min', 'abs', 'bool', 'dict', 'list', 'str', 'int', 'float', 'set', 'round'], 'required_modules': []},
+                  'allowed_functions': [], 'required_modules': []},
                  {'id': 6, 'title': 'Robot Gardener', 'text': ch6_text, 'func_name': 'water_vacation', 'max_score': 14,
 				 'tips': 
 					['Plants will never receive more than 9 units of water because, at most, all the 8 neighbors will water it plus one unit for itself. Check for this with an assert, you can prevent bugs',
@@ -316,6 +325,6 @@ my_challenges = [{'id': 0, 'title':'Intro', 'text': intro_text, 'allowed_functio
 					'To construct the <i>water</i> matrix, one way to approach this can be to do one pass over <i>flowerbed</i> and for each cell update all the relevant cells in <i>water</i>. This can be a bit tricky, think about it and read next tip if you are lost.',
 					"To update <i>water</i>, consider as an example <i>flowerbed</i> to be a 5x5 square matrix and consider plant (3, 3). Assume further that <i>flowerbed</i>[3][3] > 0 (it's not a seed), then ideally one would like to do something like <br><br> water[2:5][2:5] += 1 #increasing amount of water for each neighboring plant<br><br>Clearly that's just pseudocode as it doesn't work with lists. Can you implement a similar behaviour?"
 					], 
-				 'allowed_functions': ['range', 'len', 'max', 'min', 'abs', 'bool', 'dict', 'list', 'str', 'int', 'float', 'set', 'round'], 
+				 'allowed_functions': [],
                    'required_modules': []},
                  ]
