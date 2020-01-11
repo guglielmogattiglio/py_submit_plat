@@ -87,8 +87,12 @@ def challenge():
 
     group = Groups.query.filter_by(group_id=int(current_user.group_id)).first().group_name
     n_users = len(current_user.group.users)
+    query = Challenges.query.with_entities(Challenges.challenge_id, Challenges.max_score, Challenges.is_simulation) \
+                      .filter(Challenges.challenge_id != -1).all()
+    max_scores = {id: max_score for id, max_score, _ in query}
+    is_sim = {id: is_sim for id, _, is_sim in query}
     return render_template('challenge.html', group=group, n_users=n_users, redirect=url_for('welcome'),
-                           id=current_user.get_id())
+                           id=current_user.get_id(), max_scores=max_scores, is_sim=is_sim)
 
 
 @socketio.on('connect')
@@ -161,16 +165,18 @@ def process_script(json):
     has_raised_exc = False
     try:
         code = script.validate_script(orig_code)
-        process = script.evaluate_script(code, safe_dict, ch.func_name, ch.solutions, socketio.sleep, Config.TEST_CASE_TIMEOUT)
+        process = script.evaluate_script(code, safe_dict, ch.func_name, ch.solutions, socketio.sleep,
+                                         Config.TEST_CASE_TIMEOUT)
         for score, outcome, outcome_short in process:
-            socketio.emit('feedback', {'score': score, 'output': "\n".join(outcome), 'c_id': c_id}, room=request.sid)
-        output = "\n".join(outcome) + f'\nYour new score is {score}'
+            socketio.emit('feedback', {'score': score, 'output': "\n".join(outcome), 'c_id': c_id, 'is_last': False}, room=request.sid)
+        output = "\n".join(outcome)
     except Exception as e:
         logging.error("Error for user: %s\n" % current_user.get_id() + traceback.format_exc())
         output = "Error for user: %s\n" % current_user.get_id() + str(e)
         score = 0
         has_raised_exc = True
         outcome_short = []
+    score = truncate(score * ch.weight, 4)
     group = Groups.query.filter_by(group_name=group_name).first()
     record = ChallengeGroup.query.get((group.group_id, c_id))
     if record is None:
@@ -190,7 +196,7 @@ def process_script(json):
     db.session.add(submission)
     db.session.commit()
 
-    emit('feedback', {'score': score, 'output': output, 'c_id': c_id})
+    emit('feedback', {'score': score, 'output': output, 'c_id': c_id, 'is_last': True})
 
 
 @socketio.on('change_group')
@@ -236,3 +242,9 @@ def my_logout_user():
     db.session.commit()
     logout_user()
     return redirect(url_for('welcome'))
+
+
+########### Helper Functions #############
+
+def truncate(x, digits):
+    return int(10 ** digits * x) / 10 ** digits

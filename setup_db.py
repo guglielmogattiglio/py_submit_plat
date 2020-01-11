@@ -5,10 +5,9 @@ import logging
 #check correct challenges setup
 from source import challenges
 
-checks = {'id': 'The challenge id is missing, in /source/challenges.py, challenge %d',
- 'title': '','text': '','max_score': '','tips': '','allowed_functions': '','required_modules': '', 'func_name': ''}
-default_error = 'The challenge %s is missing. In /source/challenges.py, challenge %d'
-error_location = '. In /source/challenges.py, challenge %d'
+def truncate(x, digits):
+    return int(10 ** digits * x) / 10 ** digits
+
 
 #check intro section
 
@@ -40,6 +39,11 @@ for item in intro['required_modules']:
 
 #check challenges section
 
+checks = {'id': 'The challenge id is missing, in /source/challenges.py, challenge %d',
+ 'title': '','text': '','max_score': '','tips': '','allowed_functions': '','required_modules': '', 'func_name': ''}
+default_error = 'The challenge %s is missing. In /source/challenges.py, challenge %d'
+error_location = '. In /source/challenges.py, challenge %d'
+
 c = challenges.my_challenges[1:]
 
 for i in range(len(c)):
@@ -52,33 +56,40 @@ for i in range(len(c)):
             raise Exception(error)
 
     if not isinstance(c[i]['id'], int):
-        raise Exception('Challenge id must be an integer. Error at id %s' % str(c[i]['id']) + error_location % (i+1))
+        raise Exception('Challenge id must be an integer. Error at %s' % str(c[i]['id']) + error_location % (i+1))
     if c[i]['id'] == 0:
-        raise Exception('Challenge id must be different from 0, which is reserved for the intro. Error at id %s' % str(c[i]['id']) + error_location % (i+1))
-    if not isinstance(c[i]['max_score'], int):
-        raise Exception('Challenge max_score must be an integer. Error at id %s' % str(c[i]['max_score']) + error_location % (i+1))
+        raise Exception('Challenge id must be different from 0, which is reserved for the intro. Error at %s' % str(c[i]['id']) + error_location % (i+1))
     if not isinstance(c[i]['tips'], list):
-        raise Exception('Challenge tips must be a list of strings. It is not a list. Error at id %s' % str(c[i]['tips']) + error_location % (i+1))
+        raise Exception('Challenge tips must be a list of strings. It is not a list. Error at %s' % str(c[i]['tips']) + error_location % (i+1))
     if not isinstance(c[i]['allowed_functions'], list):
-        raise Exception('Challenge allowed_functions must be a list of strings. It is not a list. Error at id %s' % str(c[i]['allowed_functions']) + error_location % (i+1))
+        raise Exception('Challenge allowed_functions must be a list of strings. It is not a list. Error at %s' % str(c[i]['allowed_functions']) + error_location % (i+1))
     if not isinstance(c[i]['required_modules'], list):
-        raise Exception('Challenge required_modules must be a list of strings. It is not a list. Error at id %s' % str(c[i]['required_modules']) + error_location % (i+1))
+        raise Exception('Challenge required_modules must be a list of strings. It is not a list. Error at %s' % str(c[i]['required_modules']) + error_location % (i+1))
     if not isinstance(c[i]['title'], str):
-        raise Exception('Challenge title must be a string. Error at id %s' % str(c[i]['title']) + error_location % (i+1))
+        raise Exception('Challenge title must be a string. Error at %s' % str(c[i]['title']) + error_location % (i+1))
     if not isinstance(c[i]['text'], str):
-        raise Exception('Challenge text must be a string. Error at id %s' % str(c[i]['text']) + error_location % (i+1))
+        raise Exception('Challenge text must be a string. Error at %s' % str(c[i]['text']) + error_location % (i+1))
     if not isinstance(c[i]['func_name'], str):
-        raise Exception('Challenge func_name must be a string. Error at id %s' % str(c[i]['func_name']) + error_location % (i+1))
+        raise Exception('Challenge func_name must be a string. Error at %s' % str(c[i]['func_name']) + error_location % (i+1))
+    if 'weight' not in c[i]:
+        c[i]['weight'] = 1
+    if not isinstance(c[i]['weight'], (float, int)):
+        raise Exception('Challenge weight must be a number. Error at %s' % str(c[i]['weight']) + error_location % (i + 1))
+    c[i]['weight'] = truncate(c[i]['weight'], 4)
+    if 'is_simulation' not in c[i]:
+        c[i]['is_simulation'] = False
+    if not isinstance(c[i]['is_simulation'], bool):
+        raise Exception('Challenge is_simulation must be a boolean. Error at %s' % str(c[i]['func_name']) + error_location % (i + 1))
 
     for tip in c[i]['tips']:
         if not isinstance(tip, str):
-            raise Exception('Challenge tips must be a list of string. It does not contain only strings. Error at id %s' % str(tip) + error_location % (i+1))
+            raise Exception('Challenge tips must be a list of string. It does not contain only strings. Error at %s' % str(tip) + error_location % (i+1))
     for item in c[i]['allowed_functions']:
         if not isinstance(item, str):
-            raise Exception('Challenge allowed_functions must be a list of string. It does not contain only strings. Error at id %s' % str(item) + error_location % (i+1))
+            raise Exception('Challenge allowed_functions must be a list of string. It does not contain only strings. Error at %s' % str(item) + error_location % (i+1))
     for item in c[i]['required_modules']:
         if not isinstance(item, str):
-            raise Exception('Challenge required_modules must be a list of string. It does not contain only strings. Error at id %s' % str(item) + error_location % (i+1))
+            raise Exception('Challenge required_modules must be a list of string. It does not contain only strings. Error at %s' % str(item) + error_location % (i+1))
 
     if i != 0:
         if c[i]['id'] == c[i-1]['id']:
@@ -99,8 +110,8 @@ for i in range(len(c)):
         raise Exception(f'There are no corresponding solutions for the challenge with id {c_id}' + error_location % (c_id))
 
     cases = s[c_id]
-    if len(cases) != c[i]['max_score']:
-        raise Exception('Number of test cases different from corresponding challenge max_score' + error_location % (c_id))
+    # compute max score
+    c[i]['max_score'] = truncate(len(cases) * c[i]['weight'], 2)
 
 
     for i in range(len(cases)):
@@ -146,7 +157,7 @@ if Challenges.query.count() > len(c)+1:
 #add challenges and solutions to db
 
 if len(intro['allowed_functions']) > 0:
-    logging.warning('Adding functions defined is intro to all challenges.')
+    logging.warning('Adding functions defined in the intro section to all challenges.')
 
 for i in range(len(c)):
     #pre-process required_modules
@@ -160,7 +171,9 @@ for i in range(len(c)):
     record = Challenges.query.filter_by(challenge_id=int(c[i]['id'])).first()
     if record is None:
         new_chall = Challenges(challenge_id=c[i]['id'], specification=str(c[i]), allowed_functions=str(c[i]['allowed_functions']),
-                           required_modules=imports, solutions=str(s[c[i]['id']]), func_name=c[i]['func_name'].strip())
+                               required_modules=imports, solutions=str(s[c[i]['id']]), func_name=c[i]['func_name'].strip(),
+                               max_score = c[i]['max_score'], weight = c[i]['weight'],
+                               is_simulation = c[i]['is_simulation'])
         db.session.add(new_chall)
     else:
         record.specification = str(c[i])
@@ -168,19 +181,19 @@ for i in range(len(c)):
         record.required_modules = imports
         record.solutions = str(s[c[i]['id']])
         record.func_name = c[i]['func_name'].strip()
+        record.max_score = c[i]['max_score']
+        record.weight = c[i]['weight']
+        record.is_simulation = c[i]['is_simulation']
 
 # handling intro
 
 record = Challenges.query.filter_by(challenge_id=-1).first()
 if record is None:
     new_chall = Challenges(challenge_id=intro['id']-1, specification=str(intro), allowed_functions='',
-                       required_modules='', solutions='', func_name='')
+                           required_modules= '', solutions= '', func_name= '', weight= 0, is_simulation= False,
+                           max_score= 0)
     db.session.add(new_chall)
 else:
     record.specification = str(intro)
-    record.allowed_functions = ''
-    record.required_modules = ''
-    record.solutions = ''
-    record.func_name = ''
 
 db.session.commit()
