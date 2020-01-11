@@ -10,7 +10,7 @@ from sqlalchemy_utils import database_exists
 flask_app = Flask(__name__)
 flask_app.config.from_object(Config)
 db = SQLAlchemy(flask_app)
-migrate = Migrate(flask_app, db)
+migrate = Migrate(flask_app, db, compare_type=True)
 login = LoginManager(flask_app)
 login.login_view = 'welcome'
 socketio = SocketIO(flask_app, async_mode='eventlet')
