@@ -40,7 +40,7 @@ for item in intro['required_modules']:
 #check challenges section
 
 checks = {'id': 'The challenge id is missing, in /source/challenges.py, challenge %d',
- 'title': '','text': '','max_score': '','tips': '','allowed_functions': '','required_modules': '', 'func_name': ''}
+ 'title': '','text': '','tips': '','allowed_functions': '','required_modules': '', 'func_name': ''}
 default_error = 'The challenge %s is missing. In /source/challenges.py, challenge %d'
 error_location = '. In /source/challenges.py, challenge %d'
 
