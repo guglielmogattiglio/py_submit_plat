@@ -172,7 +172,7 @@ for i in range(len(c)):
     if record is None:
         new_chall = Challenges(challenge_id=c[i]['id'], specification=str(c[i]), allowed_functions=str(c[i]['allowed_functions']),
                                required_modules=imports, solutions=str(s[c[i]['id']]), func_name=c[i]['func_name'].strip(),
-                               max_score = c[i]['max_score'], weight = c[i]['weight'],
+                               max_score = c[i]['max_score'], weight = c[i]['weight'], title=c[i]['title'],
                                is_simulation = c[i]['is_simulation'])
         db.session.add(new_chall)
     else:
@@ -184,6 +184,7 @@ for i in range(len(c)):
         record.max_score = c[i]['max_score']
         record.weight = c[i]['weight']
         record.is_simulation = c[i]['is_simulation']
+        record.title = c[i]['title']
 
 # handling intro
 
@@ -191,7 +192,7 @@ record = Challenges.query.filter_by(challenge_id=-1).first()
 if record is None:
     new_chall = Challenges(challenge_id=intro['id']-1, specification=str(intro), allowed_functions='',
                            required_modules= '', solutions= '', func_name= '', weight= 0, is_simulation= False,
-                           max_score= 0)
+                           max_score= 0, title='')
     db.session.add(new_chall)
 else:
     record.specification = str(intro)

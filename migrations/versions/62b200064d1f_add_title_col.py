@@ -1,8 +1,8 @@
-"""init
+"""add title col
 
-Revision ID: 0fd00eed36b9
+Revision ID: 62b200064d1f
 Revises: 
-Create Date: 2020-01-11 18:24:42.732398
+Create Date: 2020-01-12 14:11:37.256061
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '0fd00eed36b9'
+revision = '62b200064d1f'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -28,6 +28,7 @@ def upgrade():
     sa.Column('max_score', sa.Float(), nullable=False),
     sa.Column('weight', sa.Float(), nullable=False),
     sa.Column('is_simulation', sa.Boolean(), nullable=False),
+    sa.Column('title', sa.String(length=64), nullable=False),
     sa.PrimaryKeyConstraint('challenge_id')
     )
     op.create_table('groups',

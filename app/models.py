@@ -22,6 +22,7 @@ class Challenges(db.Model):
     max_score = db.Column(db.Float(), nullable=False)
     weight = db.Column(db.Float(), nullable=False, default=1)
     is_simulation = db.Column(db.Boolean(), nullable=False, default=False)
+    title = db.Column(db.String(64), nullable=False)
 
     challenge_scoreboard = db.relationship("ChallengeGroup", cascade="all, delete-orphan", backref="challenge")
     def __repr__(self):
