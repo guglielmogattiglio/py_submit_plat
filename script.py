@@ -4,6 +4,7 @@ import re
 import func_timeout
 import traceback
 import ast
+import math
 import logging
 
 
@@ -44,7 +45,7 @@ def validate_script(script):
     return script
 
 
-def evaluate_script(script, safe_dict, func_name, sol, sleep, timeout):
+def evaluate_script(script, safe_dict, func_name, sol, sleep, timeout, max_score, is_sim):
     no_builtins_dic = {"__builtins__": None, 'Exception': Exception,
                        'traceback_extract_tb': traceback.extract_tb, 'sys_exc_info': sys.exc_info,
                        'MyExc': MyExc, 'KeyError': KeyError}
@@ -72,18 +73,45 @@ def evaluate_script(script, safe_dict, func_name, sol, sleep, timeout):
             sleep(0)
             try:
                 ret_value = func_timeout.func_timeout(float(timeout), local[func_name], args=test[0])
-                if isinstance(test[1], float) or isinstance(ret_value, float):
-                    cond = abs(ret_value - test[1]) < 1e-5
-                else:
-                    cond = ret_value == test[1]
+                if is_sim:
+                    if c > 2:
+                        continue
+                    if ret_value > test[1]:  # make it symmetric
+                        ret_value = test[1] - (ret_value - test[1])
+                    mid = test[1] / 2
+                    if abs(ret_value - test[1]) < 1e-5:
+                        outcome.append(f'test {c}: passed')
+                        outcome_short.append(1)
+                        score += max_score
+                    elif ret_value > mid:
+                        max_value = test[1] - mid
+                        b = 5
+                        a = math.log(max_score) - b * math.log(max_value)
+                        temp_score = math.exp(a + b * math.log(ret_value-mid))
 
-                if cond:
-                    outcome.append(f'test {c}: passed')
-                    outcome_short.append(1)
-                    score += 1
+                        # want to give partial points but want to favor a right solution, if wrong sol can get up to (1-gap)% of max_score
+                        gap = 0.15
+                        if (max_score - temp_score)/max_score < gap:
+                            temp_score = max_score * (1 - gap)
+                        score += temp_score
+                        outcome.append(f'test {c}: failed, but partial points were given')
+                        outcome_short.append(0)
+                    else:
+                        outcome.append(f'test {c}: failed')
+                        outcome_short.append(0)
                 else:
-                    outcome.append(f'test {c}: failed')
-                    outcome_short.append(0)
+                    if isinstance(test[1], float) or isinstance(ret_value, float):
+                        cond = abs(ret_value - test[1]) < 1e-5
+                    else:
+                        cond = ret_value == test[1]
+
+                    if cond:
+                        outcome.append(f'test {c}: passed')
+                        outcome_short.append(1)
+                        score += 1
+                    else:
+                        outcome.append(f'test {c}: failed')
+                        outcome_short.append(0)
             except func_timeout.exceptions.FunctionTimedOut:
                 outcome.append(f'test {c}: timed out')
                 outcome_short.append(-1)

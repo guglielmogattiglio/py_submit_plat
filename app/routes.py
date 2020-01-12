@@ -166,7 +166,7 @@ def process_script(json):
     try:
         code = script.validate_script(orig_code)
         process = script.evaluate_script(code, safe_dict, ch.func_name, ch.solutions, socketio.sleep,
-                                         Config.TEST_CASE_TIMEOUT)
+                                         Config.TEST_CASE_TIMEOUT, ch.max_score, ch.is_simulation)
         for score, outcome, outcome_short in process:
             socketio.emit('feedback', {'score': score, 'output': "\n".join(outcome), 'c_id': c_id, 'is_last': False}, room=request.sid)
         output = "\n".join(outcome)
@@ -176,7 +176,10 @@ def process_script(json):
         score = 0
         has_raised_exc = True
         outcome_short = []
-    score = truncate(score * ch.weight, 4)
+    if ch.is_simulation:
+        score = truncate(score, 4)
+    else:
+        score = truncate(score * ch.weight, 4)
     group = Groups.query.filter_by(group_name=group_name).first()
     record = ChallengeGroup.query.get((group.group_id, c_id))
     if record is None:
