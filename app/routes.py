@@ -87,12 +87,13 @@ def challenge():
 
     group = Groups.query.filter_by(group_id=int(current_user.group_id)).first().group_name
     n_users = len(current_user.group.users)
-    query = Challenges.query.with_entities(Challenges.challenge_id, Challenges.max_score, Challenges.is_simulation) \
+    query = Challenges.query.with_entities(Challenges.challenge_id, Challenges.max_score, Challenges.is_simulation, Challenges.title) \
                       .filter(Challenges.challenge_id != -1).all()
-    max_scores = {id: max_score for id, max_score, _ in query}
-    is_sim = {id: is_sim for id, _, is_sim in query}
+    max_scores = {id: max_score for id, max_score, _, _ in query}
+    is_sim = {id: is_sim for id, _, is_sim, _ in query}
+    ch_names = {id: name for id, _, _, name in query}
     return render_template('challenge.html', group=group, n_users=n_users, redirect=url_for('welcome'),
-                           id=current_user.get_id(), max_scores=max_scores, is_sim=is_sim)
+                           id=current_user.get_id(), max_scores=max_scores, is_sim=is_sim, ch_names=ch_names)
 
 
 @socketio.on('connect')

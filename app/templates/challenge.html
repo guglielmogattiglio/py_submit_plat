@@ -157,6 +157,7 @@ div#nav_tabs{padding-bottom: 2px;}
 	var user_id = '{{ id }}';
 	var max_scores = {{ max_scores |tojson|safe }};
     var is_sim = {{ is_sim |tojson|safe }};
+    var ch_names = {{ch_names | tojson | safe }};
 	
 	var socket = io();
     
@@ -474,7 +475,7 @@ div#nav_tabs{padding-bottom: 2px;}
 			
 			if (prev_chall_id != current_chall_id){
 				//build nav tab
-				var button = $('<button class="w3-bar-item w3-button w3-border-right" onclick="show_chall(' + current_chall_id + ')">Challenge ' + current_chall_id + '</button>');
+				var button = $('<button class="w3-bar-item w3-button w3-border-right" onclick="show_chall(' + current_chall_id + ')">' + current_chall_id + '. ' + ch_names[current_chall_id] + '</button>');
 				nav_container.append(button);
 				
 				//need to show first challenge results
@@ -483,12 +484,15 @@ div#nav_tabs{padding-bottom: 2px;}
 				} else {
 					var div = $('<div id="tab_ch_' + current_chall_id + '" class="w3-container tab_ch" style="display:none"></div>');
 				}
-				
+
+				var ch_name = $('<h4>'+ current_chall_id + '. ' + ch_names[current_chall_id] + '</h4>');
+
 				//build table header
 				table = $('<table id="tb_scores"> </table>');
 				var header = $('<tr><td class="cell_ch">Group Name</td><td class="cell_ch">Score</td><td class="cell_ch">Number of Submissions</td></tr>');
 				var row = $('<tr><td class="cell_group">' + msg_group + '</td><td class="cell_group">' + msg_score + '</td><td class="cell_group">' + msg[i]['n_attempts'] + '</td></tr>');
 				scoreboard.append(div);
+				div.append(ch_name);
 				div.append(table);
 				table.append(header);
 				table.append(row);
@@ -531,7 +535,7 @@ div#nav_tabs{padding-bottom: 2px;}
 		var sorted_keys = keys.sort(function(a, b){return b - a});
 		for (var i in sorted_keys){
 			key = sorted_keys[i]
-			var row = $('<tr><td class="cell_group">' + c + '</td><td class="cell_group">' + ranking[key].join(', ') + '</td><td class="cell_group">' + key + '</td></tr>');
+			var row = $('<tr><td class="cell_group">' + c + '</td><td class="cell_group">' + ranking[key].join(', ') + '</td><td class="cell_group">' + truncate(key, 4) + '</td></tr>');
 			table.append(row);
 			c += 1;
 		}
@@ -594,9 +598,13 @@ div#nav_tabs{padding-bottom: 2px;}
 		}
     }
 
+    function truncate(x, digits){
+	    return Math.round(x * 10**digits)/10**digits
+    }
+
 
     function map_score(score, c_id){
-        score = Math.round(score * 10**2)/10**2
+        score = truncate(score, 2)
         if (is_sim[c_id] && score > 0){
             if (score >= max_scores[c_id]){
                 return max_scores[c_id];
