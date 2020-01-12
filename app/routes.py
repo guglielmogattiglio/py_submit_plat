@@ -194,7 +194,7 @@ def process_script(json):
     db.session.commit()
 
     # log uploaded data to db
-    submission = Submissions(group_id=group.group_id, challenge_id=c_id, code=orig_code,
+    submission = Submissions(group_id=group.group_id, challenge_id=c_id, code=code,
                              score=score, output_result=",".join(map(str, outcome_short)),
                              has_raised_exc=has_raised_exc)
     db.session.add(submission)
