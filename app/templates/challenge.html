@@ -470,8 +470,8 @@ div#nav_tabs{padding-bottom: 2px;}
 		var table = "";
 		for (var i = 0; i < msg.length; i++) {
 			var msg_group = msg[i]['group_name'];
-			var msg_score = msg[i]['last_score'];
 			var current_chall_id = msg[i]['challenge_id'];
+			var msg_score = bound_if_bigger(msg[i]['last_score'], max_scores[current_chall_id]);
 			
 			if (prev_chall_id != current_chall_id){
 				//build nav tab
@@ -512,7 +512,7 @@ div#nav_tabs{padding-bottom: 2px;}
 		var group_scores = {};
 		for (var i in msg){
 			group = msg[i]['group_name'];
-			group_scores[group] = get(group_scores, group, 0) + msg[i]['last_score'];
+			group_scores[group] = get(group_scores, group, 0) + bound_if_bigger(msg[i]['last_score'], max_scores[msg[i]['challenge_id']]);
 		}
 		
 		//retrieve groups with same score
@@ -602,6 +602,12 @@ div#nav_tabs{padding-bottom: 2px;}
 	    return Math.round(x * 10**digits)/10**digits
     }
 
+    function bound_if_bigger(x, upper_bound){
+	    if (x >= upper_bound){
+	        return upper_bound;
+        }
+	    return x;
+    }
 
     function map_score(score, c_id){
         score = truncate(score, 2)
