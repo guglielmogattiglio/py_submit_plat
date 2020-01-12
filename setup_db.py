@@ -5,8 +5,16 @@ import logging
 #check correct challenges setup
 from source import challenges
 
+
 def truncate(x, digits):
+    if isinstance(x, int):
+        return x
     return int(10 ** digits * x) / 10 ** digits
+
+
+def ceil_digit(x, digits):
+    x = truncate(x, digits)
+    return x + 10**(-digits)
 
 
 #check intro section
@@ -40,7 +48,7 @@ for item in intro['required_modules']:
 #check challenges section
 
 checks = {'id': 'The challenge id is missing, in /source/challenges.py, challenge %d',
- 'title': '','text': '','tips': '','allowed_functions': '','required_modules': '', 'func_name': ''}
+ 'title': '','text': '','tips': '','allowed_functions': '','required_modules': '', 'func_name': '', 'max_score':''}
 default_error = 'The challenge %s is missing. In /source/challenges.py, challenge %d'
 error_location = '. In /source/challenges.py, challenge %d'
 
@@ -71,11 +79,9 @@ for i in range(len(c)):
         raise Exception('Challenge text must be a string. Error at %s' % str(c[i]['text']) + error_location % (i+1))
     if not isinstance(c[i]['func_name'], str):
         raise Exception('Challenge func_name must be a string. Error at %s' % str(c[i]['func_name']) + error_location % (i+1))
-    if 'weight' not in c[i]:
-        c[i]['weight'] = 1
-    if not isinstance(c[i]['weight'], (float, int)):
-        raise Exception('Challenge weight must be a number. Error at %s' % str(c[i]['weight']) + error_location % (i + 1))
-    c[i]['weight'] = truncate(c[i]['weight'], 4)
+    if not isinstance(c[i]['max_score'], (float, int)):
+        raise Exception('Challenge max_score must be a number. Error at %s' % str(c[i]['max_score']) + error_location % (i + 1))
+    c[i]['max_score'] = truncate(c[i]['max_score'], 2)
     if 'is_simulation' not in c[i]:
         c[i]['is_simulation'] = False
     if not isinstance(c[i]['is_simulation'], bool):
@@ -110,9 +116,8 @@ for i in range(len(c)):
         raise Exception(f'There are no corresponding solutions for the challenge with id {c_id}' + error_location % (c_id))
 
     cases = s[c_id]
-    # compute max score
-    c[i]['max_score'] = truncate(len(cases) * c[i]['weight'], 2)
-
+    # compute weights
+    c[i]['weight'] = ceil_digit(c[i]['max_score'] / len(cases), 4)
 
     for i in range(len(cases)):
         if not len(cases[i]) == 2:
