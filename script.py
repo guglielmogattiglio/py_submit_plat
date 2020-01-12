@@ -74,7 +74,7 @@ def evaluate_script(script, safe_dict, func_name, sol, sleep, timeout, max_score
             try:
                 ret_value = func_timeout.func_timeout(float(timeout), local[func_name], args=test[0])
                 if is_sim:
-                    if c > 2:
+                    if c > 1:
                         continue
                     if ret_value > test[1]:  # make it symmetric
                         ret_value = test[1] - (ret_value - test[1])
@@ -90,9 +90,14 @@ def evaluate_script(script, safe_dict, func_name, sol, sleep, timeout, max_score
                         temp_score = math.exp(a + b * math.log(ret_value-mid))
 
                         # want to give partial points but want to favor a right solution, if wrong sol can get up to (1-gap)% of max_score
-                        gap = 0.15
-                        if (max_score - temp_score)/max_score < gap:
-                            temp_score = max_score * (1 - gap)
+                        high_gap = 0.15
+                        low_gap = 0.01
+                        if (max_score - temp_score)/max_score < high_gap:
+                            temp_score = max_score * (1 - high_gap)
+                        # the max is needed because if 1% of max_score is < 0.01, it will be seen as a 0 by the platform and will show
+                        # ".. partial points given, your score is 0" when should be >0
+                        elif temp_score < max(1e-02, max_score * low_gap):  # give 1% if over half but too close to zero
+                            temp_score = max(1e-02, max_score * low_gap)
                         score += temp_score
                         outcome.append(f'test {c}: failed, but partial points were given')
                         outcome_short.append(0)
