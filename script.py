@@ -38,7 +38,7 @@ def validate_script(script):
     script = re.sub(r'from.*?import.*|import.*', '', script)
     # remove comments (validated keywords could be contained inside)
     script = re.sub(r'#.*', '', script)
-    script = re.sub(r"'''.*?'''", '', script, flags=re.S)
+    #script = re.sub(r"'''.*?'''", '', script, flags=re.S)
     # prevent from exploiting eval
     if '__' in script:
         raise Exception('You are not allowed to use/call reserved names delimited by __')
